@@ -1,0 +1,14 @@
+&geometry
+ dist(1,1) = 0.d0,
+ dist(2,1) = 0.d0,
+ dist(3,1) = 0.d0,
+ dist(1,2) = 0.d0,
+ dist(2,2) = 0.d0,
+ dist(3,2) = 3,
+ parent(1) = 1,
+ parent(2) = 2,
+ block_start(1) = 1,
+ block_start(2) = 6,
+ block_dim(1) = 5,
+ block_dim(2) = 5
+/
