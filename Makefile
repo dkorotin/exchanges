@@ -1,23 +1,17 @@
-FC = mpif90  
-#FC = gfortran  
-PROG = aleip 
-FFLAGS = -traceback
-#FFLAGS = -traceback -check all
-#LIBS = 
-LFLAGS = -mkl=sequential
-LFLAGS = -llapack
-PREFLAGS = 
-#
+FC = gfortran 
+PROG = aleip.x 
+FFLAGS = -Og
+LIBS = -llapack -lblas
+LFLAGS = 
+
 OBJ =  kinds.o read_hamilt.o compute_delta.o compute_g.o compute_gloc.o \
        read_pwscf.o 
-#
+
 all: $(PROG)
-# 
-aleip:  $(LIBS) aleip.o $(OBJ)
+ 
+aleip.x:  $(OBJ) aleip.o
 	$(FC) $(LFLAGS) -o $@ aleip.o $(OBJ) $(LIBS)
-	strip $@
-#
-#
+
 clean:
 	rm *.o
 	
