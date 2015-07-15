@@ -1,16 +1,15 @@
 FC = gfortran 
-PROG = aleip.x 
+PROG = exchanges.x 
 FFLAGS = -Og
 LIBS = -llapack -lblas
 LFLAGS = 
 
-OBJ =  kinds.o read_hamilt.o compute_delta.o compute_g.o compute_gloc.o \
-       read_pwscf.o 
+OBJ = parameters.o general.o iomodule.o
 
 all: $(PROG)
  
-aleip.x:  $(OBJ) aleip.o
-	$(FC) $(LFLAGS) -o $@ aleip.o $(OBJ) $(LIBS)
+exchanges.x:  $(OBJ) exchanges.o
+	$(FC) $(LFLAGS) -o $@ exchanges.o $(OBJ) $(LIBS)
 
 clean:
 	rm *.o
