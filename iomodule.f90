@@ -1,5 +1,7 @@
+! Copyright (C) Dmitry Korotin dmitry@korotin.name
+
 module iomodule
-  
+
   implicit none
   save
 

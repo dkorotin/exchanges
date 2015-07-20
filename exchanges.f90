@@ -1,3 +1,5 @@
+! Copyright (C) Dmitry Korotin dmitry@korotin.name
+
 program exchanges
 
 	use general
@@ -10,7 +12,12 @@ program exchanges
   character(len=3) :: fmt='   ' ! is used for pretty output only
 
   real(dp) :: &
-  						distance ! readius of the sphere for nearest neighbours search
+  						distance, & ! readius of the sphere for nearest neighbours search
+  						taunew(3,maxnnbrs) ! positions of nearest neighbours
+  integer :: nnnbrs, & ! total number of nearest neighbours
+  					 parents(maxnnbrs) ! parent atom for every neighbour
+
+  real(dp) :: delta
 
   call read_hamilt()
   call read_crystal()
@@ -19,11 +26,11 @@ program exchanges
   write(stdout,'(/,a14,f12.9,a5)') 'Cell constant:', alat, 'Bohr'
   write(stdout,'(20a)') 'Cell vectors (rows):'
   do i = 1, 3
-  	write(stdout,'(3f9.5)') cell(i,:)
+  	write(stdout,'(3f9.5)') cell(:,i)
   end do
   write(stdout,'(a26)') 'Atoms of the initial cell:'
   do i = 1, natoms
-  	write(stdout,'(a3,x,3f9.5)') atomlabel(i), tau(i,:)
+  	write(stdout,'(a3,x,3f9.5)') atomlabel(i), tau(:,i)
   end do
   
   write(stdout,'(/,a71)') 'We have the following basis for the hamiltonian and the green function:'
@@ -35,12 +42,62 @@ program exchanges
   			block_dim(i),block_l(i), '-orbitals (', (orbitals(block_orbitals(i,j)), j=1, block_dim(i)), ')'
   end do
   
-  call find_nnbrhds(natoms,tau,cell,block_atom(1),distance,taunew,parents)
+  distance = 1.0
+  call atoms_list('distance',distance,1,nnnbrs,taunew,parents)
 
+  ! Pretty output
+  write(stdout,'(/5x,a17,i4,a8,i3,a25,/5x,i3,a28,f6.3,a22,i2,a2,a3,a2/)') 'We will consider ', nnnbrs,' atoms: ', &
+                natoms, ' from the Hamiltonian and', (natoms-nnnbrs), &
+                ' additional ones within the ', distance, &
+                ' alat sphere from atom', block_atom(1), ' (', atomlabel(block_atom(1)), ')'
+  do i = 1, nnnbrs
+  	delta = sqrt( (taunew(1,i)-tau(1,block_atom(1)))**2 + &
+  								(taunew(2,i)-tau(2,block_atom(1)))**2 + &
+									(taunew(3,i)-tau(3,block_atom(1)))**2 )
+  	write(stdout,'(a3,x,3f9.5,3x,a,f9.5,a)') atomlabel(parents(i)), taunew(:,i), '(', delta, ')'
+  end do
 
   call clear()
 
 end program exchanges
+
+subroutine atoms_list(mode,distance,block_num,nnnbrs,taunew,parents)
+
+	use iomodule
+	use parameters, only : dp, maxnnbrs
+	use general
+	
+	implicit none
+	character(len=10), intent(in) :: mode
+	real(dp), intent(in) :: distance
+	integer, intent(in) :: block_num
+	integer, intent(out) :: nnnbrs, parents(maxnnbrs)
+	real(dp), intent(out) :: taunew(3,maxnnbrs)
+
+	! temp storage
+	real(dp) :: taunew_(3,maxnnbrs)
+	integer :: parents_(maxnnbrs), nnnbrs_
+
+	integer :: i,j, iblock
+
+	call find_nnbrs(natoms,tau,cell,block_atom(block_num),distance,nnnbrs_,taunew_,parents_)
+
+	nnnbrs = 0
+	parents = -1
+	taunew = -1000
+
+	!filter atoms by l
+	do i = 1, nnnbrs_
+		do iblock = 1, nblocks
+			if( block_atom(iblock) .eq. parents_(i) .and. block_l(iblock) .eq. block_l(block_num) ) then
+				nnnbrs = nnnbrs + 1
+				parents(nnnbrs) = parents_(i)
+				taunew(:,nnnbrs) = taunew_(:,i)
+			end if
+		end do 
+	end do
+
+end subroutine atoms_list
 
 subroutine read_crystal()
 
@@ -63,11 +120,11 @@ subroutine read_crystal()
 	end do
 	
 	read(iunsystem,*) natoms
-	allocate( tau(natoms,3) )
+	allocate( tau(3,natoms) )
 	allocate( atomlabel(natoms) )
 
 	do i=1, natoms
-		read(iunsystem,*) atomlabel(i), tau(i,:)
+		read(iunsystem,*) atomlabel(i), tau(:,i)
 	end do
 
 	call find_section(iunsystem,'&basis')

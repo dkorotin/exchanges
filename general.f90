@@ -1,3 +1,5 @@
+! Copyright (C) Dmitry Korotin dmitry@korotin.name
+
 module general
  
   use parameters, only : dp 	 
