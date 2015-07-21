@@ -2,7 +2,7 @@
 
 module general
  
-  use parameters, only : dp 	 
+  use parameters, only : dp, maxnnbrs 	 
   implicit none
   save
 
@@ -19,7 +19,7 @@ module general
   			nspin	!
 
   real(dp), allocatable :: &
-  			wk(:,:), & ! k-points weight (nspin,nkp)
+  			wk(:,:), & ! k-points weight (nkp,nspin)
   			xk(:,:,:) ! k-points coordinates in 2pi/a units (3,nkp,nspin)
   complex(dp), allocatable :: h(:,:,:,:) ! Hamiltonian matrix (hdim,hdim,nspin)
 
@@ -33,6 +33,12 @@ module general
 
   !Other
   real(dp) :: efermi
+
+  ! Nearest neighbours
+  real(dp) :: &
+             taunew(3,maxnnbrs) ! positions of nearest neighbours
+  integer :: nnnbrs, & ! total number of nearest neighbours
+             parents(maxnnbrs) ! parent atom for every neighbour
 
 
   ! That is how the atomic orbitals are encoded in the system.am file

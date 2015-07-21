@@ -9,5 +9,8 @@ module parameters
     dp = selected_real_kind(14,200), &
     maxnnbrs = 100 ! maximum number of nearest neighbours
   
+  real(dp), parameter    :: pi               = 3.14159265358979323846_dp
+  real(dp), parameter    :: tpi              = 2.0_dp * pi
+  
 
 end module parameters

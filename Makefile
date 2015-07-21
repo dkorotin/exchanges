@@ -4,7 +4,7 @@ FFLAGS = -Og
 LIBS = -llapack -lblas
 LFLAGS = 
 
-OBJ = parameters.o general.o iomodule.o find_nnbrs.o
+OBJ = parameters.o general.o iomodule.o find_nnbrs.o green_function.o
 
 all: $(PROG)
  
