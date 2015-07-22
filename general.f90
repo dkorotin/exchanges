@@ -21,7 +21,7 @@ module general
   real(dp), allocatable :: &
   			wk(:,:), & ! k-points weight (nkp,nspin)
   			xk(:,:,:) ! k-points coordinates in 2pi/a units (3,nkp,nspin)
-  complex(dp), allocatable :: h(:,:,:,:) ! Hamiltonian matrix (hdim,hdim,nspin)
+  complex(dp), allocatable :: h(:,:,:,:) ! Hamiltonian matrix (hdim,hdim,nkp,nspin)
 
   
   !Basis
@@ -38,7 +38,7 @@ module general
   real(dp) :: &
              taunew(3,maxnnbrs) ! positions of nearest neighbours
   integer :: nnnbrs, & ! total number of nearest neighbours
-             parents(maxnnbrs) ! parent atom for every neighbour
+             parent(maxnnbrs) ! parent atom for every neighbour
 
 
   ! That is how the atomic orbitals are encoded in the system.am file

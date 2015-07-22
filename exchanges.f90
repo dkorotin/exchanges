@@ -8,11 +8,13 @@ program exchange_parameters
 
   implicit none
 
-  integer :: i, j, time_start, time_end, count_rate, nz
+  integer :: i, j, time_start, time_end, count_rate, nz, ia, ja, idim, jdim, iz, istart, jstart, iend, jend
   character(len=3) :: fmt='   ' ! is used for pretty output only
   real(dp) :: pos_delta
-  complex(dp), allocatable :: z(:), G(:,:,:,:,:,:)
-  complex(dp) :: zstep
+  complex(dp), allocatable :: z(:), G(:,:,:,:,:,:), delta(:,:), tmp1(:,:)
+  complex(dp) :: zstep, tmp2
+  real(dp), allocatable :: Jexc(:,:), Jexc0(:), Jorb(:,:,:,:)
+  
 
   ! Input parameters are below:
 
@@ -77,7 +79,7 @@ program exchange_parameters
   	pos_delta = sqrt( (taunew(1,i)-tau(1,block_atom(1)))**2 + &
   								(taunew(2,i)-tau(2,block_atom(1)))**2 + &
 									(taunew(3,i)-tau(3,block_atom(1)))**2 )
-  	write(stdout,'(a3,x,3f9.5,3x,a,f9.5,a)') atomlabel(parents(i)), taunew(:,i), '(', pos_delta, ')'
+  	write(stdout,'(a3,x,3f9.5,3x,a,f9.5,a)') atomlabel(parent(i)), taunew(:,i), '(', pos_delta, ')'
   end do
 
 
@@ -109,11 +111,105 @@ program exchange_parameters
   !Now compute full Green function for all atoms
   allocate(G(nz,nnnbrs,nnnbrs,MAXVAL(block_dim),MAXVAL(block_dim),nspin))
 
-  call compute_g(nz,nnnbrs,nblocks,MAXVAL(block_dim),G,H,z(1:nz),parents(1:nnnbrs), &
+  call compute_g(nz,nnnbrs,nblocks,MAXVAL(block_dim),G,H,z(1:nz),parent(1:nnnbrs), &
                         taunew(:,1:nnnbrs),block_start(1:nblocks),block_dim(1:nblocks))
+
+  allocate(delta(hdim,hdim))
+  call compute_delta(H,delta)
+
+  allocate(Jexc(nnnbrs,nnnbrs))
+  Jexc = cmplx(0.0,0.0,dp)
+
+  allocate( Jorb(nnnbrs,nnnbrs,MAXVAL(block_dim),MAXVAL(block_dim)))
+  Jorb = cmplx(0.0,0.0,dp)
+
+  allocate( tmp1(MAXVAL(block_dim),MAXVAL(block_dim)) )
+
+  DO ia=1,nnnbrs
+    DO ja=ia+1,nnnbrs
+        ! arrays indexes
+        istart = block_start(parent(ia))
+        idim = block_dim(parent(ia))        
+        iend = block_start(parent(ia)) + block_dim(parent(ia)) - 1
+
+        jstart = block_start(parent(ja))
+        jdim = block_dim(parent(ja))
+        jend = block_start(parent(ja)) + block_dim(parent(ja)) - 1
+        
+        IF(idim .NE. jdim ) THEN
+          write(stdout,*) ia,ja,idim,jdim
+          stop 'Not equal subblocks size'
+        END IF        
+
+        DO iz=1,nz
+          zstep = z(iz+1) - z(iz)
+
+          tmp1 = cmplx(0.0,0.0,dp)
+
+          tmp1(1:idim,1:idim) = MATMUL( &
+                            MATMUL(delta(istart:iend,istart:iend),G(iz,ia,ja,1:idim,1:jdim,2)), &
+                            MATMUL(delta(jstart:jend,jstart:jend),G(iz,ja,ia,1:jdim,1:idim,1)) &
+                            )
+
+          Jorb(ia,ja,1:idim,1:idim) = &
+              Jorb(ia,ja,1:idim,1:idim) + DIMAG(tmp1(1:idim,1:idim)*zstep)
+
+        END DO
+
+        ! Trace
+        DO i=1,idim
+          Jexc(ia,ja) = Jexc(ia,ja) + Jorb(ia,ja,i,i)
+        END DO
+
+    END DO
+  END DO
+  deallocate(tmp1)
+
+  Jexc = (-1.d0/tpi)*Jexc
+  Jorb = (-1.d0/tpi)*Jorb
+
+  DO ia = 1, nnnbrs
+    DO ja = ia+1, nnnbrs
+        ! Compute distance between atoms for pretty output
+        pos_delta= SQRT((taunew(1,ia) - taunew(1,ja))**2+ &
+                        (taunew(2,ia) - taunew(2,ja))**2+ &
+                        (taunew(3,ia) - taunew(3,ja))**2 )
+        !
+        write(stdout,'(/5x,a35,i3,a4,i3,a2,f7.3,a7,i5,a13,f6.3,a)') &
+              'Exchange interaction between atoms ', ia, 'and', ja, ': ', &
+              Jexc(ia,ja)*1.0d3, ' meV = ', INT(Jexc(ia,ja)/kb_ev), ' K (distance:',pos_delta,')'
+        
+        write(stdout,'(/7x,a62)') "Orbital exchange interaction matrix J_{i,j,m,n} (in K and meV):"
+        DO i=1,block_dim(parent(ia))
+          write(stdout, '(7x,5i5,8x,5f9.5)' ) INT(Jorb(ia,ja,i,:)/kb_ev), Jorb(ia,ja,i,:)*1.d3
+        END DO
+
+    END DO
+  END DO
+
+  write(stdout,*)
+  write(stdout,*) '    Computed orbitals occupations should coincide with your DFT results'
+  write(stdout,*) '    If they differ significanlty - check your integration contour.'
+  DO ia=1,nnnbrs    
+    DO j=1,nspin
+      write(stdout,'(/5x,a8,i3,a5,i2)') 'For atom', ia, 'spin', j
+      DO i = 1, block_dim(parent(ia))
+          tmp2 = cmplx(0.0,0.0,dp)
+          DO iz=1,nz
+            zstep = z(iz+1) - z(iz)
+            tmp2 = tmp2 + ((-1.d0/pi)*DIMAG(G(iz,ia,ia,i,i,j)*zstep))
+          END DO
+        write(stdout,'(7x,a8,i2,a13,f6.3)') 'Orbital', i, ' occupation: ', DREAL(tmp2)
+      END DO
+    END DO
+  END DO
+
 
   if( allocated(z) ) deallocate(z)
   if( allocated(G) ) deallocate(G)
+  if( allocated(delta) ) deallocate(delta)
+  if( allocated(Jorb) ) deallocate(Jorb)
+  if( allocated(Jexc) ) deallocate(Jexc)
   call clear()
 
   call system_clock(time_end,count_rate)
@@ -121,6 +217,25 @@ program exchange_parameters
   write(stdout,'(/5x,a15,i5,a8)') 'Execution time:', (time_end - time_start)/count_rate, 'seconds'
 
 end program exchange_parameters
+
+subroutine compute_delta(h,delta)
+  use parameters, only : dp
+  use general, only : hdim, nspin, nkp, wk
+  
+  implicit none
+  complex(dp) :: h(hdim,hdim,nkp,nspin), delta(hdim,hdim)
+  integer :: ik
+
+  delta = cmplx(0.0,0.0,dp)
+  
+  ! delta = h(spin_up) - h(spin_down)
+  do ik=1, nkp
+    delta(:,:) = delta(:,:) + h(:,:,ik,1)*wk(ik,1) - h(:,:,ik,2)*wk(ik,2)
+  end do
+
+  delta = dreal(delta) 
+
+END SUBROUTINE compute_delta
 
 subroutine atoms_list(mode,distance,block_num)
 
@@ -135,12 +250,12 @@ subroutine atoms_list(mode,distance,block_num)
 
 	! temp storage
 	real(dp) :: taunew_(3,maxnnbrs)
-	integer :: parents_(maxnnbrs), nnnbrs_
+	integer :: parent_(maxnnbrs), nnnbrs_
 
 	integer :: i,j, iblock
 	logical :: have_atom_already
 
-	call find_nnbrs(natoms,tau,cell,block_atom(block_num),distance,nnnbrs_,taunew_,parents_)
+	call find_nnbrs(natoms,tau,cell,block_atom(block_num),distance,nnnbrs_,taunew_,parent_)
 
 	! We want to consider all hamilt atoms anyway
 	do i = 1, natoms
@@ -148,20 +263,20 @@ subroutine atoms_list(mode,distance,block_num)
 		if( .not. have_atom_already ) then
 			nnnbrs_ = nnnbrs_+1
 			taunew_(:,nnnbrs_) = tau(:,i)
-			parents_(nnnbrs_) = i
+			parent_(nnnbrs_) = i
 		end if
 	end do
 
 	nnnbrs = 0
-	parents = -1
+	parent = -1
 	taunew = -1000
 
 	!filter atoms by l
 	do i = 1, nnnbrs_
 		do iblock = 1, nblocks
-			if( block_atom(iblock) .eq. parents_(i) .and. block_l(iblock) .eq. block_l(block_num) ) then
+			if( block_atom(iblock) .eq. parent_(i) .and. block_l(iblock) .eq. block_l(block_num) ) then
 				nnnbrs = nnnbrs + 1
-				parents(nnnbrs) = parents_(i)
+				parent(nnnbrs) = parent_(i)
 				taunew(:,nnnbrs) = taunew_(:,i)
 			end if
 		end do 

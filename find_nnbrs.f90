@@ -1,6 +1,6 @@
 ! Copyright (C) Dmitry Korotin dmitry@korotin.name
 
-subroutine find_nnbrs(natoms,tau,cell,aoi,maxdistance,nnnbrs,taunew,parents)
+subroutine find_nnbrs(natoms,tau,cell,aoi,maxdistance,nnnbrs,taunew,parent)
 	
 	use parameters, only : dp, maxnnbrs
 	implicit none
@@ -13,14 +13,14 @@ subroutine find_nnbrs(natoms,tau,cell,aoi,maxdistance,nnnbrs,taunew,parents)
 
 	real(dp), intent(out) :: taunew(3,maxnnbrs) ! nnbrhds positions
 	integer, intent(out) :: nnnbrs, & ! total number of nearest neighbours
-													parents(maxnnbrs) ! arent atom for each neighbour
+													parent(maxnnbrs) ! arent atom for each neighbour
 
-  integer :: i, j, k, ntransl, iatom, new_a, parentstmp
+  integer :: i, j, k, ntransl, iatom, new_a, parenttmp
   real(dp) v(3), new_pos(3), distance, dist(maxnnbrs), distt, tautmp(3)
   logical :: have_atom_already
 
   taunew = -1000.0
-  parents = -1
+  parent = -1
   new_a = 0
 
   ntransl = ceiling(distance) + 1
@@ -41,7 +41,7 @@ subroutine find_nnbrs(natoms,tau,cell,aoi,maxdistance,nnnbrs,taunew,parents)
             if( .not. have_atom_already ) then
               new_a=new_a+1
               taunew(:,new_a) = new_pos
-              parents(new_a) = iatom
+              parent(new_a) = iatom
               dist(new_a) = distance
               IF (new_a .eq. maxnnbrs) &
                 stop 'Error find_nnbrs: max number of nearest neighbours reached'
@@ -69,9 +69,9 @@ subroutine find_nnbrs(natoms,tau,cell,aoi,maxdistance,nnnbrs,taunew,parents)
         taunew(:,i) = taunew(:,i+1)
         taunew(:,i+1) = tautmp
 
-        parentstmp = parents(i)
-        parents(i) = parents(i+1)
-        parents(i+1) = parentstmp
+        parenttmp = parent(i)
+        parent(i) = parent(i+1)
+        parent(i+1) = parenttmp
       end if
     end do
   end do
