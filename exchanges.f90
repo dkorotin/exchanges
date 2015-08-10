@@ -11,7 +11,7 @@ program exchange_parameters
   integer :: i, j, time_start, time_end, count_rate, nz, ia, ja, idim, jdim, iz, istart, jstart, iend, jend
   character(len=3) :: fmt='   ' ! is used for pretty output only
   real(dp) :: pos_delta
-  complex(dp), allocatable :: z(:), G(:,:,:,:,:,:), delta(:,:), tmp1(:,:)
+  complex(dp), allocatable :: z(:), G(:,:,:,:,:,:), delta(:,:), tmp1(:,:), hksum(:,:,:)
   complex(dp) :: zstep, tmp2
   real(dp), allocatable :: Jexc(:,:), Jexc0(:), Jorb(:,:,:,:)
   
@@ -46,16 +46,34 @@ program exchange_parameters
   
   call read_hamilt()
   call read_crystal()
+
+ 	if( iverbosity .ge. 3) then
+		! debug information
+		! output H(0)
+		allocate( hksum(hdim,hdim,nspin) )
+		hksum = cmplx(0.0,0.0,dp)
+
+		do i=1, nkp
+			hksum(:,:,:) = hksum(:,:,:) + h(:,:,i,:)*wk(i)
+		end do
+
+		do i=1, nspin
+			write(stdout,'(/,5x,a13,i2,a1)') 'H(0) for spin', i, ':'
+			call output_matrix_by_blocks(hdim,dreal(hksum(:,:,i)))
+		end do
+
+		deallocate( hksum )	
+	end if
   
   ! Output of the readed values
-  write(stdout,'(/,a14,f12.9,a5)') 'Cell constant:', alat, 'Bohr'
-  write(stdout,'(20a)') 'Cell vectors (rows):'
+  write(stdout,'(/,5x,a14,f12.9,a5)') 'Cell constant:', alat, 'Bohr'
+  write(stdout,'(5x,20a)') 'Cell vectors (rows):'
   do i = 1, 3
-  	write(stdout,'(3f9.5)') cell(:,i)
+  	write(stdout,'(7x,3f9.5)') cell(:,i)
   end do
-  write(stdout,'(a26)') 'Atoms of the initial cell:'
+  write(stdout,'(5x,a26)') 'Atoms of the initial cell:'
   do i = 1, natoms
-  	write(stdout,'(a3,x,3f9.5)') atomlabel(i), tau(:,i)
+  	write(stdout,'(7x,a3,x,3f9.5)') atomlabel(i), tau(:,i)
   end do
   
   write(stdout,'(/,5x,a71)') 'We have the following basis for the hamiltonian and the green function:'
@@ -113,6 +131,11 @@ program exchange_parameters
 
   allocate(delta(hdim,hdim))
   call compute_delta(H,delta)
+
+  if( iverbosity .ge. 3) then
+  	write(stdout,'(/,5x,a15)') 'Computed delta:'
+  	call output_matrix_by_blocks(hdim,dreal(delta))
+  end if
 
   allocate(Jexc(nnnbrs,nnnbrs))
   Jexc = cmplx(0.0,0.0,dp)

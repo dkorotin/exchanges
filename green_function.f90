@@ -6,7 +6,7 @@ SUBROUTINE compute_g(nz,natoms,nblocks,gdim,G,H,z,parent,taunew,block_start,bloc
   implicit none
 
   INTEGER, INTENT(IN) :: nz, natoms, nblocks, gdim, parent(natoms), block_start(nblocks), block_dim(nblocks)
-  COMPLEX(DP), INTENT(IN) :: H(hdim,hdim,nkp), z(nz)
+  COMPLEX(DP), INTENT(IN) :: H(hdim,hdim,nkp,nspin), z(nz)
   REAL(DP), INTENT(IN) :: taunew(3,natoms)
   COMPLEX(DP), INTENT(OUT) :: G(nz,natoms,natoms,gdim,gdim,nspin)
 
@@ -32,7 +32,7 @@ SUBROUTINE compute_g(nz,natoms,nblocks,gdim,G,H,z,parent,taunew,block_start,bloc
 
           DO iz = 1, nz
             
-            CALL compute_gloc(Gloc,H,ik,z(iz))
+            CALL compute_gloc(Gloc,H(:,:,ik,ispin),z(iz))
             
             DO i = 1, block_dim(parent(ia))
               DO j = 1, block_dim(parent(ja))
@@ -51,18 +51,21 @@ SUBROUTINE compute_g(nz,natoms,nblocks,gdim,G,H,z,parent,taunew,block_start,bloc
 
 END SUBROUTINE compute_g
 
-subroutine compute_gloc(Gloc,H,ik,z)
+subroutine compute_gloc(Gloc,H,z)
   use parameters, only : dp
   use general, only: hdim, efermi, nkp
 
   implicit none
   
-  complex(dp) :: Gloc(hdim,hdim), H(hdim,hdim,nkp), z, tmp(hdim,hdim)
-  integer :: ik, i, j
+  complex(dp), intent(in) :: H(hdim,hdim), z
+  complex(dp), intent(out) :: Gloc(hdim,hdim)
+  
+  complex(dp) ::  tmp(hdim,hdim)
+  integer :: i, j
 
   Gloc = cmplx(0.0,0.0,dp)
 
-  tmp(:,:) = -1.d0*H(:,:,ik)
+  tmp(:,:) = -1.d0*H(:,:)
 
   do i=1, hdim
     tmp(i,i) = z + tmp(i,i) + cmplx(efermi,0.d0)

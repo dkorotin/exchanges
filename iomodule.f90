@@ -62,4 +62,28 @@ module iomodule
     
   end subroutine open_input_file
 
+  subroutine output_matrix_by_blocks(dim,matrix)
+    use parameters, only : dp
+    use general, only : nblocks, block_start, block_dim
+    implicit none
+
+    integer, intent(in) :: dim
+    real(dp), intent(in) :: matrix(dim,dim)
+    integer :: iblock, i, j, block_end
+
+    character :: fmt
+
+    do iblock = 1, nblocks
+
+      block_end = block_start(iblock) + block_dim(iblock) - 1
+      write(stdout,'(7x,a5,i3,a1)') 'Block', iblock, ':'
+      write(fmt,'(i1)') block_dim(iblock)
+      do i=block_start(iblock), block_end
+        write(stdout,'(7x,'//fmt//'f9.5)') (matrix(i,j), j=block_start(iblock), block_end)
+      end do
+    
+    end do
+
+  end subroutine output_matrix_by_blocks
+
 end module iomodule
