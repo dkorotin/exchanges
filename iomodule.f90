@@ -13,6 +13,7 @@ module iomodule
 
   integer :: globalhash = 0
   integer :: ios = 0
+  integer :: iverbosity = 0 ! verbosity of the output
 
   contains
   

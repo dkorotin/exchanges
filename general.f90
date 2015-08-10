@@ -19,8 +19,8 @@ module general
   			nspin	!
 
   real(dp), allocatable :: &
-  			wk(:,:), & ! k-points weight (nkp,nspin)
-  			xk(:,:,:) ! k-points coordinates in 2pi/a units (3,nkp,nspin)
+  			wk(:), & ! k-points weight (nkp)
+  			xk(:,:) ! k-points coordinates in 2pi/a units (3,nkp)
   complex(dp), allocatable :: h(:,:,:,:) ! Hamiltonian matrix (hdim,hdim,nkp,nspin)
 
   

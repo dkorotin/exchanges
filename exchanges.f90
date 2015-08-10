@@ -17,8 +17,6 @@ program exchange_parameters
   
 
   ! Input parameters are below:
-
-  integer :: iverbosity ! verbosity of output
   
   ! Intergation mesh:
   integer :: nz1, nz2, nz3
@@ -39,7 +37,6 @@ program exchange_parameters
 	emin = -30
 	emax = 0.05
 	distance = 8.d-1
-	iverbosity = 0
 	mode = 'distance'
 	
   call system_clock(time_start,count_rate)
@@ -61,8 +58,8 @@ program exchange_parameters
   	write(stdout,'(a3,x,3f9.5)') atomlabel(i), tau(:,i)
   end do
   
-  write(stdout,'(/,a71)') 'We have the following basis for the hamiltonian and the green function:'
-  write(stdout,'(3x,i3,a20,i2,a8)') hdim, ' orbitals grouped in', nblocks, ' blocks:'
+  write(stdout,'(/,5x,a71)') 'We have the following basis for the hamiltonian and the green function:'
+  write(stdout,'(5x,i3,a20,i2,a8)') hdim, ' orbitals grouped in', nblocks, ' blocks:'
   do i=1, nblocks
   	write(fmt,'(i1)') block_dim(i)
   	write(stdout,'(5x,a3,a7,i2,a2,3x,i1,x,a,a11,'//adjustl(fmt)//'a11,a1)') &
@@ -73,13 +70,13 @@ program exchange_parameters
   call atoms_list(mode,distance,1)
 
   ! Pretty output
-  write(stdout,'(/a17,i4,a8)') 'We will consider ', nnnbrs,' atoms: '
+  write(stdout,'(/5x,a17,i4,a8)') 'We will consider ', nnnbrs,' atoms: '
 
   do i = 1, nnnbrs
   	pos_delta = sqrt( (taunew(1,i)-tau(1,block_atom(1)))**2 + &
   								(taunew(2,i)-tau(2,block_atom(1)))**2 + &
 									(taunew(3,i)-tau(3,block_atom(1)))**2 )
-  	write(stdout,'(a3,x,3f9.5,3x,a,f9.5,a)') atomlabel(parent(i)), taunew(:,i), '(', pos_delta, ')'
+  	write(stdout,'(5x,a3,x,3f9.5,3x,a,f9.5,a)') atomlabel(parent(i)), taunew(:,i), '(', pos_delta, ')'
   end do
 
 
@@ -230,7 +227,7 @@ subroutine compute_delta(h,delta)
   
   ! delta = h(spin_up) - h(spin_down)
   do ik=1, nkp
-    delta(:,:) = delta(:,:) + h(:,:,ik,1)*wk(ik,1) - h(:,:,ik,2)*wk(ik,2)
+    delta(:,:) = delta(:,:) + wk(ik)*( h(:,:,ik,1) - h(:,:,ik,2) )
   end do
 
   delta = dreal(delta) 
@@ -320,17 +317,11 @@ subroutine read_crystal()
 	allocate( block_l(nblocks) )
 	allocate( block_dim(nblocks) )
 	allocate( block_orbitals(nblocks,7) )
+	allocate( block_start(nblocks) )
 	block_orbitals = 0
 
 	do i = 1, nblocks
-		read(iunsystem,*) dummy, block_atom(i), block_l(i), block_dim(i), block_orbitals(i,1:block_dim(i))
-	end do
-
-	! let's find the first orbital of each block - for simplicity
-	allocate( block_start(nblocks) )
-	block_start(1) = 1
-	do i = 2, nblocks
-		block_start(i) = block_start(i-1) + block_dim(i-1)
+		read(iunsystem,*) dummy, block_atom(i), block_l(i), block_dim(i), block_start(i), block_orbitals(i,1:block_dim(i))
 	end do
 
 	call find_section(iunsystem,'&efermi')
@@ -352,23 +343,37 @@ subroutine read_hamilt()
 
 	call open_input_file(iunhamilt,'hamilt.am')
 
-	call find_section(iunhamilt,'&hamilt')
-	read(iunhamilt,*) nkp, hdim, nspin
+	call find_section(iunhamilt,'&nspin')
+	read(iunhamilt,*) nspin
+
+	call find_section(iunhamilt,'&nkp')
+	read(iunhamilt,*) nkp
+
+	call find_section(iunhamilt,'&dim')
+	read(iunhamilt,*) hdim
+
 	allocate( h(hdim,hdim,nkp,nspin) )
-	allocate( wk(nkp,nspin) )
-	allocate( xk(3,nkp,nspin) )
+	allocate( wk(nkp) )
+	allocate( xk(3,nkp) )
 
 	h = cmplx(0.0,0.0)
 	wk = 0.0
 	xk = 0.0
 
+	call find_section(iunhamilt,'&kpoints')
+	do ik=1, nkp
+		read(iunhamilt,*) wk(ik), xk(:,ik)
+	end do
+			
+	call find_section(iunhamilt,'&hamiltonian')
+	
 	do ispin = 1, nspin
 		do ik = 1, nkp
-			read(iunhamilt,*) wk(ik,ispin), xk(:,ik,ispin)
 			do i=1, hdim
-				do j=1, hdim
+				do j=i, hdim
 					read(iunhamilt,*) Hre, Him
 					h(i,j,ik,ispin) = cmplx(Hre,Him)
+					h(j,i,ik,ispin) = dconjg( h(i,j,ik,ispin) )
 				end do
 			end do
 		end do

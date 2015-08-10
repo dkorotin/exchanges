@@ -25,7 +25,7 @@ SUBROUTINE compute_g(nz,natoms,nblocks,gdim,G,H,z,parent,taunew,block_start,bloc
         DO ja = 1, natoms
           ! exp(i*k*(Ri-Rj))
           kphase = cdexp( 1.d0*DCMPLX(0.d0,1.d0)*tpi*&
-              DOT_PRODUCT( xk(:,ik,ispin), ((taunew(:,ia)-tau(:,parent(ia)))-(taunew(:,ja)-tau(:,parent(ja))) ) ))
+              DOT_PRODUCT( xk(:,ik), ((taunew(:,ia)-tau(:,parent(ia)))-(taunew(:,ja)-tau(:,parent(ja))) ) ))
 
           istart = block_start(parent(ia))-1
           jstart = block_start(parent(ja))-1
@@ -36,7 +36,7 @@ SUBROUTINE compute_g(nz,natoms,nblocks,gdim,G,H,z,parent,taunew,block_start,bloc
             
             DO i = 1, block_dim(parent(ia))
               DO j = 1, block_dim(parent(ja))
-                  G(iz,ia,ja,i,j,ispin) = G(iz,ia,ja,i,j,ispin) + wk(ik,ispin)*Gloc(istart+i,jstart+j)*kphase
+                  G(iz,ia,ja,i,j,ispin) = G(iz,ia,ja,i,j,ispin) + wk(ik)*Gloc(istart+i,jstart+j)*kphase
               END DO
             END DO
 
