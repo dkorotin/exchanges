@@ -45,7 +45,10 @@ module iomodule
     integer :: hash
 
     open(unit=unit, file=trim(filename), iostat=ios, status="old", action="read")
-    if ( ios /= 0 ) stop "Error opening file name"
+    if ( ios /= 0 ) then
+      write(stdout,*) "Error opening file "//filename
+      stop 
+    end if
 
     !here I want to check the hash
     call find_section(unit,'&hash')
