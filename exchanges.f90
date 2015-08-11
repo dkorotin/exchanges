@@ -41,6 +41,13 @@ program exchange_parameters
 	
   call system_clock(time_start,count_rate)
 
+  write(stdout,'(/,5x,a66)') '------------------------------------------------------------------'
+  write(stdout,'(5x,a66)')   '                      Program EXCHANGES                           '
+  write(stdout,'(5x,a66)')   ' for calculation of exchange parameters of the Heisenberg model.  '
+	write(stdout,'(/,5x,a66)') 'Please cite "D. M. Korotin et al., Phys. Rev. B 91, 224405 (2015)"'
+	write(stdout,'(5x,a66)')   '    in publications or presentations arising from this work.      '
+	write(stdout,'(5x,a66,/)') '------------------------------------------------------------------'
+
   read(stdin, exchanges, iostat=ios)
   if( ios .ne. 0 ) stop "Can't read input"
   
