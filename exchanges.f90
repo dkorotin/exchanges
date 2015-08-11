@@ -54,8 +54,8 @@ program exchange_parameters
   call read_hamilt()
   call read_crystal()
 
+  ! debug
  	if( iverbosity .ge. 3) then
-		! debug information
 		! output H(0)
 		allocate( hksum(hdim,hdim,nspin) )
 		hksum = cmplx(0.0,0.0,dp)
@@ -71,6 +71,7 @@ program exchange_parameters
 
 		deallocate( hksum )	
 	end if
+	! end of debug
   
   ! Output of the readed values
   write(stdout,'(/,5x,a14,f12.9,a5)') 'Cell constant:', alat, 'Bohr'
@@ -139,10 +140,12 @@ program exchange_parameters
   allocate(delta(hdim,hdim))
   call compute_delta(H,delta)
 
+  ! debug
   if( iverbosity .ge. 3) then
   	write(stdout,'(/,5x,a15)') 'Computed delta:'
   	call output_matrix_by_blocks(hdim,dreal(delta))
   end if
+  ! end of debug
 
   allocate(Jexc(nnnbrs,nnnbrs))
   Jexc = cmplx(0.0,0.0,dp)

@@ -23,7 +23,7 @@ subroutine find_nnbrs(natoms,tau,cell,aoi,maxdistance,nnnbrs,taunew,parent)
   parent = -1
   new_a = 0
 
-  ntransl = ceiling(distance) + 1
+  ntransl = ceiling(distance) + 2
   do i = -ntransl, ntransl
     do j = -ntransl, ntransl
       do k = -ntransl, ntransl
