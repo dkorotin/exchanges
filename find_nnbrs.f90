@@ -15,7 +15,7 @@ subroutine find_nnbrs(natoms,tau,cell,aoi,maxdistance,nnnbrs,taunew,parent)
 	integer, intent(out) :: nnnbrs, & ! total number of nearest neighbours
 													parent(maxnnbrs) ! arent atom for each neighbour
 
-  integer :: i, j, k, ntransl, iatom, new_a, parenttmp
+  integer :: i, j, k, ntransl, iatom, new_a, parenttmp, dummy
   real(dp) v(3), new_pos(3), distance, dist(maxnnbrs), distt, tautmp(3)
   logical :: have_atom_already
 
@@ -37,7 +37,7 @@ subroutine find_nnbrs(natoms,tau,cell,aoi,maxdistance,nnnbrs,taunew,parent)
                           (new_pos(3)-tau(3,aoi))**2 )
           
           if( distance .le. maxdistance ) then
-            call haa(taunew(:,:),new_pos,have_atom_already)
+            call haa(taunew(:,:), new_pos, have_atom_already, dummy)
             if( .not. have_atom_already ) then
               new_a=new_a+1
               taunew(:,new_a) = new_pos
@@ -78,10 +78,10 @@ subroutine find_nnbrs(natoms,tau,cell,aoi,maxdistance,nnnbrs,taunew,parent)
 
 end subroutine find_nnbrs
 
-subroutine haa(storage, new_pos,h)
+subroutine haa(storage, new_pos,h, index)
 
 ! Determines if storage contains new_pos already or not
-! If yes: h = .true.
+! If yes: h = .true., index contains the position of the atom
 
   use parameters
   
@@ -89,11 +89,14 @@ subroutine haa(storage, new_pos,h)
   
   real(dp), intent(in) :: storage(3,maxnnbrs), new_pos(3)
   logical, intent(out) :: h
+  integer, intent(out) :: index
   
   integer :: i
   real(dp),parameter :: eps=1.d-5 
   
   h = .false.
+  index = -1 
+
   do i=1, maxnnbrs
     if((ABS(storage(1,i)-new_pos(1)) .LE. eps) &
       .AND. (ABS(storage(2,i)-new_pos(2)) .LE. eps) &

@@ -12,7 +12,7 @@ exchanges.x:  $(OBJ) exchanges.o
 	$(FC) $(LFLAGS) -o $@ exchanges.o $(OBJ) $(LIBS)
 
 clean:
-	rm *.o
+	rm *.o *.mod
 	
 %.o: %.f90
 	$(FC) -c $(FFLAGS) -o $(*F).o $<

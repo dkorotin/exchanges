@@ -279,23 +279,55 @@ subroutine atoms_list(mode,distance,block_num)
 	integer, intent(in) :: block_num
 
 	! temp storage
-	real(dp) :: taunew_(3,maxnnbrs)
+	real(dp) :: taunew_(3,maxnnbrs), vect(3), d
 	integer :: parent_(maxnnbrs), nnnbrs_
 
-	integer :: i,j, iblock
+	integer :: i,j, iblock, nvect, index
 	logical :: have_atom_already
+
+	nnnbrs = 0
+	parent = -1
+	taunew = -1000
 
 	call find_nnbrs(natoms,tau,cell,block_atom(block_num),distance,nnnbrs_,taunew_,parent_)
 
-	! We want to consider all hamilt atoms anyway
-	do i = 1, natoms
-		call haa(taunew_, tau(:,i), have_atom_already)
-		if( .not. have_atom_already ) then
-			nnnbrs_ = nnnbrs_+1
-			taunew_(:,nnnbrs_) = tau(:,i)
-			parent_(nnnbrs_) = i
-		end if
-	end do
+	select case ( trim(mode) )
+		case ('list') ! list mode
+			call find_section(stdin,'ATOMS_LIST')
+			read(stdin,*) nvect
+
+			do i = 1, nvect
+				read(stdin,*) vect(:)
+				do j = 1, nnnbrs_
+					call haa(taunew_, vect, have_atom_already, index)
+					if( .not. have_atom_already ) then
+						write(stdout,'(/,"Error: Can not find atom in position", 3f9.5,/)') vect
+						stop 
+					else
+						nnnbrs = nnnbrs + 1
+						parent(nnnbrs) = parent_(index)
+						taunew(:,nnnbrs) = vect
+					end if
+				end do
+			end do
+			! reset arrays
+			nnnbrs_ = nnnbrs
+			parent_ = parent
+			taunew_ = taunew
+
+		case default ! 'distance mode'
+
+			! We want to consider all hamilt atoms anyway
+			do i = 1, natoms
+				call haa(taunew_, tau(:,i), have_atom_already, index)
+				if( .not. have_atom_already ) then
+					nnnbrs_ = nnnbrs_+1
+					taunew_(:,nnnbrs_) = tau(:,i)
+					parent_(nnnbrs_) = i
+				end if
+			end do
+
+	end select
 
 	nnnbrs = 0
 	parent = -1
