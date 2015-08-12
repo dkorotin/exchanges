@@ -102,7 +102,7 @@ program exchange_parameters
   	pos_delta = sqrt( (taunew(1,i)-tau(1,block_atom(1)))**2 + &
   								(taunew(2,i)-tau(2,block_atom(1)))**2 + &
 									(taunew(3,i)-tau(3,block_atom(1)))**2 )
-  	write(stdout,'(5x,a3,x,3f9.5,3x,a,f9.5,a)') atomlabel(parent(i)), taunew(:,i), '(', pos_delta, ')'
+  	write(stdout,'(5x,i2,a2,a3,x,3f9.5,3x,a12,f9.5,a)') i, ': ', atomlabel(parent(i)), taunew(:,i), '( distance =', pos_delta, ')'
   end do
 
 
@@ -219,7 +219,7 @@ program exchange_parameters
 
   write(stdout,*)
   write(stdout,*) '    Computed orbitals occupations should coincide with your DFT results'
-  write(stdout,*) '    If they differ significanlty - check your integration contour.'
+  write(stdout,*) '    If they differ significantly - check your integration contour.'
   DO ia=1,nnnbrs    
     DO j=1,nspin
       write(stdout,'(/5x,a8,i3,a5,i2)') 'For atom', ia, 'spin', j
