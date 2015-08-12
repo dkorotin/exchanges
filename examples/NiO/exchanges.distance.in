@@ -1,0 +1,10 @@
+&exchanges
+ emin = -15,
+ emax = 0.1
+ height = 0.2
+ nz1 = 250
+ nz2 = 450
+ nz3 = 250
+ mode = 'distance'
+ distance = 0.5
+/

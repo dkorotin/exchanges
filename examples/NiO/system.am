@@ -1,0 +1,32 @@
+# This file was generated on:  10Aug2015 16:35:28 
+
+&hash
+  1439206528
+
+&cell
+ 7.882813400
+  0.50000  0.50000  1.00000
+  0.50000  1.00000  0.50000
+  1.00000  0.50000  0.50000
+    4
+ Ni1   0.00000  0.00000  0.00000
+ Ni2   0.00000  0.00000  1.00000
+ O1    0.50000  0.50000  0.50000
+ O1    1.50000  1.50000  1.50000
+
+&nelec
+  28.00
+
+&efermi
+ 11.7710
+
+# Basis description:
+# dim, nblocks
+# atom_sym, atom_num, l_sym, block_dim, block_start, orbitals(1:block_dim)
+&basis
+16   4
+Ni  1 d 5   1     7 8 6 9 5
+Ni  2 d 5   6     7 8 6 9 5
+O1  3 p 3  11     3 4 2
+O1  4 p 3  14     3 4 2
+

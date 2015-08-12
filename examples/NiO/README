@@ -1,0 +1,14 @@
+Please run examples as
+PATH_TO_EXCHANGES/exchanges.x < exchanges.in > exchanges.out
+
+The first example ( exchanges.distance.in ) demonstrates calculation
+of Heisenberg model exchange parameter in a 'distance' mode. In that
+mode the code will try to find all atoms within a sphere with radius
+defined as 'distance' parameter in the input file (in alat units).
+Since the nearest neighbouring atoms in NiO are located on 0.707
+distance, in the first example the code don't find an additional atoms
+and calculates the exchange parameters only for atoms included into
+the hamiltonian.
+
+You can use file exchanges.distance.out.reference for comparison
+with your output.
