@@ -301,7 +301,8 @@ subroutine atoms_list(mode,distance,block_num)
 				do j = 1, nnnbrs_
 					call haa(taunew_, vect, have_atom_already, index)
 					if( .not. have_atom_already ) then
-						write(stdout,'(/,"Error: Can not find atom in position", 3f9.5,/)') vect
+						write(stdout,'(/,"Error: Can not find atom in position", 3f9.5, " within sphere of ",f9.5,/)') &
+							vect,distance
 						stop ' '
 					else
 						nnnbrs = nnnbrs + 1

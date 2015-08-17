@@ -12,3 +12,12 @@ the hamiltonian.
 
 You can use file exchanges.distance.out.reference for comparison
 with your output.
+
+Another example (exchanges.list.in) demonstrates how to list
+atoms of interest by hands. Please note the 'mode' flag in the input
+file, the ATOMS_LIST section and the increased 'distance' value.
+All atoms listed in the ATOMS_LIST section should be located closer
+than 'distance' value to the first atom.
+
+YES, WE USE THE FIRST ATOM OF THE HAMILTONIAN AS A REFERENCE POINT
+FOR THE NEAREST NEIGHBOURS SEARCH.
