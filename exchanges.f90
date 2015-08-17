@@ -85,7 +85,7 @@ program exchange_parameters
   end do
   
   write(stdout,'(/,5x,a71)') 'We have the following basis for the hamiltonian and the green function:'
-  write(stdout,'(5x,i3,a20,i2,a8)') hdim, ' orbitals grouped in', nblocks, ' blocks:'
+  write(stdout,'(5x,i3,a20,i3,a8)') hdim, ' orbitals grouped in', nblocks, ' blocks:'
   do i=1, nblocks
   	write(fmt,'(i1)') block_dim(i)
   	write(stdout,'(5x,a3,a7,i2,a2,3x,i1,x,a,a11,'//adjustl(fmt)//'a11,a1)') &
