@@ -297,16 +297,17 @@ subroutine atoms_list(mode,distance,block_num)
 			read(stdin,*) nvect
 
 			do i = 1, nvect
-				read(stdin,*) vect(:)
+				read(stdin,*) vect(1:3)
 				do j = 1, nnnbrs_
 					call haa(taunew_, vect, have_atom_already, index)
 					if( .not. have_atom_already ) then
 						write(stdout,'(/,"Error: Can not find atom in position", 3f9.5,/)') vect
-						stop 
+						stop ' '
 					else
 						nnnbrs = nnnbrs + 1
 						parent(nnnbrs) = parent_(index)
 						taunew(:,nnnbrs) = vect
+						exit
 					end if
 				end do
 			end do

@@ -78,12 +78,12 @@ subroutine find_nnbrs(natoms,tau,cell,aoi,maxdistance,nnnbrs,taunew,parent)
 
 end subroutine find_nnbrs
 
-subroutine haa(storage, new_pos,h, index)
+subroutine haa(storage, new_pos, h, index)
 
 ! Determines if storage contains new_pos already or not
 ! If yes: h = .true., index contains the position of the atom
 
-  use parameters
+  use parameters, only : dp, maxnnbrs
   
   implicit none
   
@@ -100,7 +100,11 @@ subroutine haa(storage, new_pos,h, index)
   do i=1, maxnnbrs
     if((ABS(storage(1,i)-new_pos(1)) .LE. eps) &
       .AND. (ABS(storage(2,i)-new_pos(2)) .LE. eps) &
-      .AND. (ABS(storage(3,i)-new_pos(3)) .LE. eps)) h=.true.
+      .AND. (ABS(storage(3,i)-new_pos(3)) .LE. eps)) then
+        h = .true.
+        index = i
+        exit
+    end if
   end do
   
 end subroutine
