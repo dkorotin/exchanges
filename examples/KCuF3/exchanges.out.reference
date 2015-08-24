@@ -1,0 +1,176 @@
+
+     ------------------------------------------------------------------
+                           Program EXCHANGES                           
+      for calculation of exchange parameters of the Heisenberg model.  
+
+     Please cite "D. M. Korotin et al., Phys. Rev. B 91, 224405 (2015)"
+         in publications or presentations arising from this work.      
+     ------------------------------------------------------------------
+
+
+     Cell constant:11.064350870 Bohr
+     Cell vectors (rows):
+         1.00000  0.00000  0.00000
+         0.00000  1.00000  0.00000
+         0.00000  0.00000  1.34008
+     Atoms of the initial cell:
+       Cu1   0.50000  0.00000  0.00000
+       Cu2   0.00000  0.50000  0.00000
+       Cu3   0.50000  0.00000  0.67004
+       Cu4   0.00000  0.50000  0.67004
+       K     0.00000  0.00000  0.33502
+       K     0.00000  0.00000 -0.33502
+       K     0.50000  0.50000  0.33502
+       K     0.50000  0.50000 -0.33502
+       F1    0.50000  0.00000  0.33502
+       F1    0.50000  0.00000 -0.33502
+       F2    0.27197  0.22803  0.00000
+       F2   -0.27197 -0.22803  0.00000
+       F3    0.27197 -0.22803  0.67004
+       F3   -0.27197  0.22803  0.67004
+       F4    0.00000  0.50000  0.33502
+       F4    0.00000  0.50000 -0.33502
+       F5    0.22803 -0.27197  0.00000
+       F5   -0.22803  0.27197  0.00000
+       F6    0.22803  0.27197  0.67004
+       F6   -0.22803 -0.27197  0.67004
+
+     We have the following basis for the hamiltonian and the green function:
+      56 orbitals grouped in16 blocks:
+     Cu1 (atom  1):   5 d-orbitals (3z^2-1     xz         yz         x^2-y^2    xy         )
+     Cu2 (atom  2):   5 d-orbitals (3z^2-1     xz         yz         x^2-y^2    xy         )
+     Cu3 (atom  3):   5 d-orbitals (3z^2-1     xz         yz         x^2-y^2    xy         )
+     Cu4 (atom  4):   5 d-orbitals (3z^2-1     xz         yz         x^2-y^2    xy         )
+      F1 (atom  9):   3 p-orbitals (z          x          y          )
+      F1 (atom 10):   3 p-orbitals (z          x          y          )
+      F2 (atom 11):   3 p-orbitals (z          x          y          )
+      F2 (atom 12):   3 p-orbitals (z          x          y          )
+      F3 (atom 13):   3 p-orbitals (z          x          y          )
+      F3 (atom 14):   3 p-orbitals (z          x          y          )
+      F4 (atom 15):   3 p-orbitals (z          x          y          )
+      F4 (atom 16):   3 p-orbitals (z          x          y          )
+      F5 (atom 17):   3 p-orbitals (z          x          y          )
+      F5 (atom 18):   3 p-orbitals (z          x          y          )
+      F6 (atom 19):   3 p-orbitals (z          x          y          )
+      F6 (atom 20):   3 p-orbitals (z          x          y          )
+
+     We will consider    4 atoms: 
+      1: Cu1   0.50000  0.00000  0.00000   ( distance =  0.00000)
+      2: Cu2   0.00000  0.50000  0.00000   ( distance =  0.70711)
+      3: Cu3   0.50000  0.00000  0.67004   ( distance =  0.67004)
+      4: Cu4   0.00000  0.50000  0.67004   ( distance =  0.97414)
+
+     Exchange interaction between atoms   1 and  2:   0.438 meV =     5 K (distance: 0.707)
+
+       Orbital exchange interaction matrix J_{i,j,m,n} (in K and meV)
+           2    0    0    0    3          0.23403  0.00000 -0.00000  0.00000  0.27506
+           0    0    0    0    0         -0.00000 -0.00000  0.00000  0.00000 -0.00000
+           0    0    0    0    0          0.00000  0.00000 -0.00000  0.00000  0.00000
+           0    0    0    0    0         -0.00000 -0.00000  0.00000 -0.00000 -0.00000
+           2    0    0    0    2          0.17366  0.00000 -0.00000  0.00000  0.20417
+
+     Exchange interaction between atoms   1 and  3: -17.279 meV =  -200 K (distance: 0.670)
+
+       Orbital exchange interaction matrix J_{i,j,m,n} (in K and meV)
+        -176    0    0    0  -30        -15.23074  0.00000 -0.00000 -0.00000 -2.62525
+           0    0    0    0    0          0.00000  0.00000  0.00000 -0.00000  0.00000
+           0    0    0    0    0         -0.00000  0.00000  0.00000  0.00000 -0.00000
+           0    0    0    0    0         -0.00000 -0.00000  0.00000  0.00000 -0.00000
+        -137    0    0    0  -23        -11.89055  0.00000 -0.00000 -0.00000 -2.04865
+
+     Exchange interaction between atoms   1 and  4:  -1.012 meV =   -11 K (distance: 0.974)
+
+       Orbital exchange interaction matrix J_{i,j,m,n} (in K and meV)
+          -8    0    0    0   -4         -0.72346  0.01247 -0.01247 -0.00000 -0.37740
+           0    0    0    0    0         -0.00028  0.00001 -0.00001  0.00000 -0.00014
+           0    0    0    0    0          0.00028 -0.00001  0.00001  0.00000  0.00014
+           0    0    0    0    0         -0.00000  0.00000  0.00000  0.00000 -0.00000
+          -6    0    0    0   -3         -0.55318  0.00954 -0.00954 -0.00000 -0.28855
+
+     Exchange interaction between atoms   2 and  3:  -0.050 meV =     0 K (distance: 0.974)
+
+       Orbital exchange interaction matrix J_{i,j,m,n} (in K and meV)
+           0    0    0    0    0          0.01711 -0.00659  0.00659 -0.00000  0.06816
+           0    0    0    0    0         -0.00046  0.00009 -0.00009 -0.00000 -0.00078
+           0    0    0    0    0          0.00046 -0.00009  0.00009 -0.00000  0.00078
+           0    0    0    0    0         -0.00000  0.00000  0.00000 -0.00000 -0.00000
+           0    0    0    0    0         -0.02019  0.00671 -0.00671  0.00000 -0.06695
+
+     Exchange interaction between atoms   2 and  4: -17.277 meV =  -200 K (distance: 0.670)
+
+       Orbital exchange interaction matrix J_{i,j,m,n} (in K and meV)
+        -176    0    0    0   30        -15.22910  0.00000 -0.00000 -0.00000  2.62380
+           0    0    0    0    0          0.00000  0.00000 -0.00000 -0.00000 -0.00000
+           0    0    0    0    0         -0.00000 -0.00000  0.00000  0.00000  0.00000
+           0    0    0    0    0         -0.00000 -0.00000  0.00000  0.00000  0.00000
+         137    0    0    0  -23         11.88953 -0.00000  0.00000  0.00000 -2.04757
+
+     Exchange interaction between atoms   3 and  4:   0.438 meV =     5 K (distance: 0.707)
+
+       Orbital exchange interaction matrix J_{i,j,m,n} (in K and meV)
+           9    0    0    0    3          0.78187 -0.00000  0.00000 -0.00000  0.27019
+           0    0    0    0    0         -0.00000 -0.00000  0.00000  0.00000 -0.00000
+           0    0    0    0    0          0.00000  0.00000 -0.00000 -0.00000 -0.00000
+           0    0    0    0    0          0.00000 -0.00000 -0.00000 -0.00000 -0.00000
+         -12    0    0    0   -3         -1.10539  0.00000 -0.00000  0.00000 -0.34359
+
+     Computed orbitals occupations should coincide with your DFT results
+     If they differ significantly - check your integration contour.
+
+     For atom  1 spin 1
+        Orbital 1 occupation:  0.997
+        Orbital 2 occupation:  1.000
+        Orbital 3 occupation:  1.000
+        Orbital 4 occupation:  1.000
+        Orbital 5 occupation:  1.000
+
+     For atom  1 spin 2
+        Orbital 1 occupation:  0.484
+        Orbital 2 occupation:  1.000
+        Orbital 3 occupation:  1.000
+        Orbital 4 occupation:  1.000
+        Orbital 5 occupation:  0.698
+
+     For atom  2 spin 1
+        Orbital 1 occupation:  0.997
+        Orbital 2 occupation:  1.000
+        Orbital 3 occupation:  1.000
+        Orbital 4 occupation:  1.000
+        Orbital 5 occupation:  1.000
+
+     For atom  2 spin 2
+        Orbital 1 occupation:  0.484
+        Orbital 2 occupation:  1.000
+        Orbital 3 occupation:  1.000
+        Orbital 4 occupation:  1.000
+        Orbital 5 occupation:  0.698
+
+     For atom  3 spin 1
+        Orbital 1 occupation:  0.484
+        Orbital 2 occupation:  1.000
+        Orbital 3 occupation:  1.000
+        Orbital 4 occupation:  1.000
+        Orbital 5 occupation:  0.698
+
+     For atom  3 spin 2
+        Orbital 1 occupation:  0.997
+        Orbital 2 occupation:  1.000
+        Orbital 3 occupation:  1.000
+        Orbital 4 occupation:  1.000
+        Orbital 5 occupation:  1.000
+
+     For atom  4 spin 1
+        Orbital 1 occupation:  0.484
+        Orbital 2 occupation:  1.000
+        Orbital 3 occupation:  1.000
+        Orbital 4 occupation:  1.000
+        Orbital 5 occupation:  0.698
+
+     For atom  4 spin 2
+        Orbital 1 occupation:  0.997
+        Orbital 2 occupation:  1.000
+        Orbital 3 occupation:  1.000
+        Orbital 4 occupation:  1.000
+        Orbital 5 occupation:  1.000
+
+     Execution time: 1229 seconds

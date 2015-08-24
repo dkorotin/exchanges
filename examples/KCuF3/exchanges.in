@@ -1,0 +1,4 @@
+&exchanges
+ distance = 0.2
+! mode = 'list' 
+/
