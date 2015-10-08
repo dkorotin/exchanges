@@ -1,5 +1,3 @@
-[TOC]
-
 # Introduction
 The document describes how to calculate Heisenberg exchange parameters for a magnetic compound using Green's functions formalism.
 
@@ -240,8 +238,8 @@ CARD: ATOMS_LIST
 ========================================================================
 ```
 
-#License
+# License
 The code is distributed under GNU GPL v2
 
-#Author
+# Author
 dmitry@korotin.name
