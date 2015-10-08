@@ -39,7 +39,7 @@ module iomodule
   subroutine open_input_file(unit,filename)
 
     integer, intent(in) :: unit
-    character(40), intent(in) :: filename
+    character(len=*), intent(in) :: filename
 
     character(40) :: hashline
     integer :: hash
