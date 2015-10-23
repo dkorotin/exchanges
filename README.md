@@ -239,7 +239,7 @@ CARD: ATOMS_LIST
 ```
 
 # License
-The code is distributed under GNU GPL v2
+The code is distributed under BSD License
 
 # Author
 dmitry@korotin.name
