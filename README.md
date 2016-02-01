@@ -5,7 +5,7 @@ The calculation consists of 3 independent parts:
 
 - Self consistent spin-polarized DFT calculation. Here and below we imply that you use Quantum ESPRESSO (QE) package for such calculation.
 
-- Generation of a model Hamiltonian in Wannier functions basis. The basis should include d-states of magnetic ions and sometimes p-states of the nearest ligands. This could be done using wannier_ham.x code from QE postprocessing tools. The Hamiltonian should be stored in the [AMULET code](http://amulet-code.org) file format. __Please note that at the moment AMULET file format isn't supported by wannier_ham.x from the stable release of QE. Contact to [Dmitry Korotin](mailto:dmitry@korotin.name) directly, to obtain the proper version of the QE code.__
+- Generation of a model Hamiltonian in Wannier functions basis. The basis should include d-states of magnetic ions and sometimes p-states of the nearest ligands. This could be done using wannier_ham.x code from QE postprocessing tools. The Hamiltonian should be stored in the [AMULET code](http://amulet-code.org) file format. __Please use the latest stable QE version (5.3.0 and above) for the Hamiltonian production.__
 
 - Calculation of the exchange parameters using exchanges code. The code uses as input only two files: _system.am_ and _hamilt.am_ from the previous step.
 
@@ -21,7 +21,6 @@ degauss = set a reasonable value for your system
 One is allowed to perform scf calculation in parallel mode, but `wf_collect = .true.` key must be set, since wannier_ham.x and exchanges.x codes are serial only.
 
 # Step 2: Hamiltonian in Wannier functions basis generation.
-__Don't forget to request from [Dmitry Korotin](mailto:dmitry@korotin.name) a proper develop version of the QE for this step.__
 The theoretical background for Wannier functions generation and Hamiltonian production procedure is described in [EPJB 65, 91 (2008)](http://www.springerlink.com/index/10.1140/epjb/e2008-00326-3). There is also an example in QE distributive (in `PP/examples/WannierHam_example` dir).
 
 Before you start the model Hamiltonian generation, you should know a symmetry of trial atomic orbitals that will be used for projection (typically these are transition metal d- plus, sometimes, the nearest ligands p-orbitals). And you should know numbers of bands (or energy interval) that you are going to reproduce with the model Hamiltonian. One of the simplest methods to determine the energy interval is to plot the partial densities of states for atomic orbitals with desired symmetry.

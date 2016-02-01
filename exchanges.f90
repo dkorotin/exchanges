@@ -368,6 +368,7 @@ subroutine read_crystal()
 		read(iunsystem,*) cell(:,i)
 	end do
 	
+	call find_section(iunsystem,'&atoms')
 	read(iunsystem,*) natoms
 	allocate( tau(3,natoms) )
 	allocate( atomlabel(natoms) )
