@@ -5,7 +5,7 @@ The calculation consists of 3 independent parts:
 
 - Self consistent spin-polarized DFT calculation. Here and below we imply that you use Quantum ESPRESSO (QE) package for such calculation.
 
-- Generation of a model Hamiltonian in Wannier functions basis. The basis should include d-states of magnetic ions and sometimes p-states of the nearest ligands. This could be done using wannier_ham.x code from QE postprocessing tools. The Hamiltonian should be stored in the [AMULET code](http://amulet-code.org) file format. __Please use the latest stable QE version (5.3.0 and above) for the Hamiltonian production.__
+- Generation of a model Hamiltonian in Wannier functions basis. The basis should include *d*-states of magnetic ions and sometimes *p*-states of the nearest ligands. This could be done using wannier_ham.x code from QE postprocessing tools. The Hamiltonian should be stored in the [AMULET code](http://amulet-code.org) file format. __Please use the latest stable QE version (5.3.0 and above) for the Hamiltonian production.__
 
 - Calculation of the exchange parameters using exchanges code. The code uses as input only two files: _system.am_ and _hamilt.am_ from the previous step.
 
@@ -132,7 +132,7 @@ CARD: WANNIER_AC
       
       Type:           INTEGER
       Description:    Magnetic quantum number of trial orbital (from 1 to 5
-                      for d-orbitals, from 1 to 3 for o-orbitals)
+                      for d-orbitals, from 1 to 3 for p-orbitals)
       +--------------------------------------------------------------------
 ===END OF CARD==========================================================
 ```
