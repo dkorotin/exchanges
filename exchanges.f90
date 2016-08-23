@@ -413,6 +413,7 @@ subroutine read_hamilt()
 
 	call find_section(iunhamilt,'&nspin')
 	read(iunhamilt,*) nspin
+	if (nspin .ne. 2) stop 'A spin-polarized hamiltonian is neccessary'
 
 	call find_section(iunhamilt,'&nkp')
 	read(iunhamilt,*) nkp
