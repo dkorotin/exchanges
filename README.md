@@ -207,6 +207,14 @@ NAMELIST: &exchanges
                    in alat
    +--------------------------------------------------------------------
    +--------------------------------------------------------------------
+   Variable:       l
+   
+   Type:           character
+   Default:        'd'
+   Description:    One could compute exchanges between 'd', or 'p' or
+                   even 's' orbitals (can't imagine for a what)
+   +--------------------------------------------------------------------
+   +--------------------------------------------------------------------
    Variable:       mode
    
    Type:           character

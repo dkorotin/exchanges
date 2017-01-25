@@ -10,6 +10,7 @@ program exchange_parameters
 
   integer :: i, j, time_start, time_end, count_rate, nz, ia, ja, idim, jdim, iz, istart, jstart, iend, jend
   character(len=3) :: fmt='   ' ! is used for pretty output only
+  character(len=1) :: l
   real(dp) :: pos_delta
   complex(dp), allocatable :: z(:), G(:,:,:,:,:,:), delta(:,:), tmp1(:,:), hksum(:,:,:)
   complex(dp) :: zstep, tmp2
@@ -27,7 +28,7 @@ program exchange_parameters
   										 ! if mode='csphere'
   character(len=10) :: mode ! mode for the nearest neighbours search
 
-  namelist /exchanges/ nz1, nz2, nz3, height, emin, emax, distance, iverbosity, mode
+  namelist /exchanges/ nz1, nz2, nz3, height, emin, emax, distance, iverbosity, mode, l
 
   ! default values
 	nz1 = 150
@@ -38,6 +39,7 @@ program exchange_parameters
 	emax = 0.05
 	distance = 8.d-1
 	mode = 'distance'
+	l = 'd'
 	
   call system_clock(time_start,count_rate)
 
@@ -93,7 +95,7 @@ program exchange_parameters
   			block_dim(i),block_l(i), '-orbitals (', (orbitals(block_orbitals(i,j)), j=1, block_dim(i)), ')'
   end do
   
-  call atoms_list(mode,distance,1)
+  call atoms_list(mode,distance,l)
 
   ! Pretty output
   write(stdout,'(/5x,a17,i4,a8)') 'We will consider ', nnnbrs,' atoms: '
@@ -211,7 +213,8 @@ program exchange_parameters
         
         write(stdout,'(/7x,a62)') "Orbital exchange interaction matrix J_{i,j,m,n} (in K and meV):"
         DO i=1,block_dim(parent(ia))
-          write(stdout, '(7x,5i5,8x,5f9.5)' ) INT(Jorb(ia,ja,i,:)/kb_ev), Jorb(ia,ja,i,:)*1.d3
+          write(stdout, '(7x,5i5,8x,5f9.5)' ) INT(Jorb(ia,ja,i,1:block_dim(parent(ia)))/kb_ev), &
+          																		Jorb(ia,ja,i,1:block_dim(parent(ia)))*1.d3
         END DO
 
     END DO
@@ -267,7 +270,7 @@ subroutine compute_delta(h,delta)
 
 END SUBROUTINE compute_delta
 
-subroutine atoms_list(mode,distance,block_num)
+subroutine atoms_list(mode,distance,l_of_interest)
 
 	use iomodule
 	use parameters, only : dp, maxnnbrs
@@ -276,7 +279,7 @@ subroutine atoms_list(mode,distance,block_num)
 	implicit none
 	character(len=10), intent(in) :: mode
 	real(dp), intent(in) :: distance
-	integer, intent(in) :: block_num
+	character(len=1), intent(in) :: l_of_interest
 
 	! temp storage
 	real(dp) :: taunew_(3,maxnnbrs), vect(3), d
@@ -289,7 +292,7 @@ subroutine atoms_list(mode,distance,block_num)
 	parent = -1
 	taunew = -1000
 
-	call find_nnbrs(natoms,tau,cell,block_atom(block_num),distance,nnnbrs_,taunew_,parent_)
+	call find_nnbrs(natoms,tau,cell,block_atom(1),distance,nnnbrs_,taunew_,parent_)
 
 	select case ( trim(mode) )
 		case ('list') ! list mode
@@ -301,8 +304,8 @@ subroutine atoms_list(mode,distance,block_num)
 				do j = 1, nnnbrs_
 					call haa(taunew_, vect, have_atom_already, index)
 					if( .not. have_atom_already ) then
-						write(stdout,'(/,"Error: Can not find atom in position", 3f9.5, " within sphere of ",f9.5,/)') &
-							vect,distance
+						write(stdout,'(/,"Error: Can not find atom in position", 3f9.5, " within sphere of ",f9.5," with ",a2," orbitals"/)') &
+							vect,distance,l_of_interest
 						stop ' '
 					else
 						nnnbrs = nnnbrs + 1
@@ -338,7 +341,7 @@ subroutine atoms_list(mode,distance,block_num)
 	!filter atoms by l
 	do i = 1, nnnbrs_
 		do iblock = 1, nblocks
-			if( block_atom(iblock) .eq. parent_(i) .and. block_l(iblock) .eq. block_l(block_num) ) then
+			if( block_atom(iblock) .eq. parent_(i) .and. block_l(iblock) .eq. l_of_interest ) then
 				nnnbrs = nnnbrs + 1
 				parent(nnnbrs) = parent_(i)
 				taunew(:,nnnbrs) = taunew_(:,i)
@@ -480,6 +483,6 @@ subroutine inverse_complex_matrix(dim,a)
   call ZGETRF(dim,dim,a,dim,ipiv,info)
   if(info /= 0) stop "inverse_complex_matrix Error in ZGETRF"
   call ZGETRI(dim,a,dim,ipiv,work,dim,info)
-  if(info /= 0) stop"inverse_complex_matrix Error in ZGETRI"
+  if(info /= 0) stop "inverse_complex_matrix Error in ZGETRI"
 
 end subroutine
