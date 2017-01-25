@@ -1,7 +1,7 @@
 SUBROUTINE compute_g(nz,natoms,nblocks,gdim,G,H,z,parent,taunew,block_start,block_dim)
 
   use parameters, only : dp, tpi
-  use general, only : hdim, nkp, nspin, xk, wk, tau
+  use general, only : hdim, nkp, nspin, xk, wk, tau, block_atom
 
   implicit none
 
@@ -25,7 +25,7 @@ SUBROUTINE compute_g(nz,natoms,nblocks,gdim,G,H,z,parent,taunew,block_start,bloc
         DO ja = 1, natoms
           ! exp(i*k*(Ri-Rj))
           kphase = cdexp( 1.d0*DCMPLX(0.d0,1.d0)*tpi*&
-              DOT_PRODUCT( xk(:,ik), ((taunew(:,ia)-tau(:,parent(ia)))-(taunew(:,ja)-tau(:,parent(ja))) ) ))
+              DOT_PRODUCT( xk(:,ik), ((taunew(:,ia)-tau(:,block_atom(parent(ia))))-(taunew(:,ja)-tau(:,block_atom(parent(ja)))) ) ))
 
           istart = block_start(parent(ia))-1
           jstart = block_start(parent(ja))-1

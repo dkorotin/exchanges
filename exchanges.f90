@@ -104,7 +104,8 @@ program exchange_parameters
   	pos_delta = sqrt( (taunew(1,i)-tau(1,block_atom(1)))**2 + &
   								(taunew(2,i)-tau(2,block_atom(1)))**2 + &
 									(taunew(3,i)-tau(3,block_atom(1)))**2 )
-  	write(stdout,'(5x,i2,a2,a3,x,3f9.5,3x,a12,f9.5,a)') i, ': ', atomlabel(parent(i)), taunew(:,i), '( distance =', pos_delta, ')'
+  	write(stdout,'(5x,i2,a2,a3,x,3f9.5,3x,a12,f9.5,a)') i, ': ', &
+  		atomlabel( block_atom( parent(i) ) ), taunew(:,i), '( distance =', pos_delta, ')'
   end do
 
 
@@ -343,7 +344,7 @@ subroutine atoms_list(mode,distance,l_of_interest)
 		do iblock = 1, nblocks
 			if( block_atom(iblock) .eq. parent_(i) .and. block_l(iblock) .eq. l_of_interest ) then
 				nnnbrs = nnnbrs + 1
-				parent(nnnbrs) = parent_(i)
+				parent(nnnbrs) = iblock
 				taunew(:,nnnbrs) = taunew_(:,i)
 			end if
 		end do 
