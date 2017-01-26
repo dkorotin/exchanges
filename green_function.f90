@@ -17,11 +17,12 @@ SUBROUTINE compute_g(nz,natoms,nblocks,gdim,G,H,z,parent,taunew,block_start,bloc
   G = cmplx(0.0,0.0,dp)
 
   allocate(Gloc(hdim,hdim))
-
+ 
+  !$OMP PARALLEL PRIVATE(Gloc,kphase,istart,jstart)
   do ispin = 1, nspin
     DO ik = 1, nkp
 
-      !$OMP PARALLEL DO PRIVATE(Gloc,kphase,istart,jstart)
+      !$OMP DO
       DO iz = 1, nz
 
         CALL compute_gloc(Gloc,H(:,:,ik,ispin),z(iz))
@@ -46,10 +47,11 @@ SUBROUTINE compute_g(nz,natoms,nblocks,gdim,G,H,z,parent,taunew,block_start,bloc
         END DO
 
       END DO
-      !$OMP END PARALLEL DO
+      !$OMP END DO
 
     END DO
   end do
+  !$OMP END PARALLEL 
 
   deallocate(Gloc)
 
