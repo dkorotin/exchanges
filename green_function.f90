@@ -21,19 +21,21 @@ SUBROUTINE compute_g(nz,natoms,nblocks,gdim,G,H,z,parent,taunew,block_start,bloc
   do ispin = 1, nspin
     DO ik = 1, nkp
 
-      DO ia = 1, natoms
-        DO ja = 1, natoms
-          ! exp(i*k*(Ri-Rj))
-          kphase = cdexp( 1.d0*DCMPLX(0.d0,1.d0)*tpi*&
-              DOT_PRODUCT( xk(:,ik), ((taunew(:,ia)-tau(:,block_atom(parent(ia))))-(taunew(:,ja)-tau(:,block_atom(parent(ja)))) ) ))
+      !$OMP PARALLEL DO PRIVATE(Gloc,kphase,istart,jstart)
+      DO iz = 1, nz
 
-          istart = block_start(parent(ia))-1
-          jstart = block_start(parent(ja))-1
+        CALL compute_gloc(Gloc,H(:,:,ik,ispin),z(iz))
 
-          DO iz = 1, nz
-            
-            CALL compute_gloc(Gloc,H(:,:,ik,ispin),z(iz))
-            
+        DO ia = 1, natoms
+          DO ja = 1, natoms
+            ! exp(i*k*(Ri-Rj))
+            kphase = cdexp( 1.d0*DCMPLX(0.d0,1.d0)*tpi*&
+                DOT_PRODUCT( xk(:,ik), &
+                  ((taunew(:,ia)-tau(:,block_atom(parent(ia))))-(taunew(:,ja)-tau(:,block_atom(parent(ja)))) ) ))
+
+            istart = block_start(parent(ia))-1
+            jstart = block_start(parent(ja))-1
+                          
             DO i = 1, block_dim(parent(ia))
               DO j = 1, block_dim(parent(ja))
                   G(iz,ia,ja,i,j,ispin) = G(iz,ia,ja,i,j,ispin) + wk(ik)*Gloc(istart+i,jstart+j)*kphase
@@ -41,9 +43,11 @@ SUBROUTINE compute_g(nz,natoms,nblocks,gdim,G,H,z,parent,taunew,block_start,bloc
             END DO
 
           END DO
-
         END DO
+
       END DO
+      !$OMP END PARALLEL DO
+
     END DO
   end do
 

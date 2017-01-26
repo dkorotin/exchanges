@@ -730,7 +730,7 @@ pre {
 
 <ul>
 <li><p>Self consistent spin-polarized DFT calculation. Here and below we imply that you use Quantum ESPRESSO (QE) package for such calculation.</p></li>
-<li><p>Generation of a model Hamiltonian in Wannier functions basis. The basis should include d-states of magnetic ions and sometimes p-states of the nearest ligands. This could be done using wannier_ham.x code from QE postprocessing tools. The Hamiltonian should be stored in the <a href="http://amulet-code.org">AMULET code</a> file format. <strong>Please use the latest stable QE version (5.3.0 and above) for the Hamiltonian production.</strong></p></li>
+<li><p>Generation of a model Hamiltonian in Wannier functions basis. The basis should include <em>d</em>-states of magnetic ions and sometimes <em>p</em>-states of the nearest ligands. This could be done using wannier_ham.x code from QE postprocessing tools. The Hamiltonian should be stored in the <a href="http://amulet-code.org">AMULET code</a> file format. <strong>Please use the latest stable QE version (5.3.0 and above) for the Hamiltonian production.</strong></p></li>
 <li><p>Calculation of the exchange parameters using exchanges code. The code uses as input only two files: <em>system.am</em> and <em>hamilt.am</em> from the previous step.</p></li>
 </ul>
 
@@ -862,7 +862,7 @@ CARD: WANNIER_AC
 
       Type:           INTEGER
       Description:    Magnetic quantum number of trial orbital (from 1 to 5
-                      for d-orbitals, from 1 to 3 for o-orbitals)
+                      for d-orbitals, from 1 to 3 for p-orbitals)
       +--------------------------------------------------------------------
 ===END OF CARD==========================================================
 </code></pre>
@@ -888,6 +888,8 @@ wannier_bands.dat
 <a id="user-content-installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
 
 <p>The code requires a Fortran compiler (gfortran is ok) and LAPACK installed in the system. Open <code>Makefile</code> with your favorite editor and set <code>FC</code> and <code>LIBS</code> variables by hands. Than just say <code>make</code> inside the directory with source code.</p>
+
+<p>The code supports openmp parallelization and could be run on a multiprocessor machine as <code>OMP_NUM_THREADS=4 exchanges.x &lt; exchages.in</code> (where 4 is the number of parallel threads)</p>
 
 <p><code>exchanges.x</code> file should be generated as a result.</p>
 
@@ -941,6 +943,14 @@ NAMELIST: &amp;exchanges
    Default:        0.8
    Description:    Radius of the sphere for the nearest neighbors search
                    in alat
+   +--------------------------------------------------------------------
+   +--------------------------------------------------------------------
+   Variable:       l
+
+   Type:           character
+   Default:        'd'
+   Description:    One could compute exchanges between 'd', or 'p' or
+                   even 's' orbitals (can't imagine for a what)
    +--------------------------------------------------------------------
    +--------------------------------------------------------------------
    Variable:       mode

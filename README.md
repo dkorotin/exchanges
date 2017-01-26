@@ -154,6 +154,8 @@ The first two contains the Hamiltonian and some data about crystal structure of 
 ## Installation
 The code requires a Fortran compiler (gfortran is ok) and LAPACK installed in the system. Open `Makefile` with your favorite editor and set `FC` and `LIBS` variables by hands. Than just say `make` inside the directory with source code.
 
+The code supports openmp parallelization and could be run on a multiprocessor machine as `OMP_NUM_THREADS=4 exchanges.x < exchages.in` (where 4 is the number of parallel threads)
+
 `exchanges.x` file should be generated as a result.
 
 ## Usage
