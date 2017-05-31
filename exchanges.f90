@@ -2,9 +2,10 @@
 
 program exchange_parameters
 
-	use general
-	use parameters
-	use iomodule
+  use general
+  use parameters
+  use iomodule
+  use omp_lib
 
   implicit none
 
@@ -26,32 +27,34 @@ program exchange_parameters
   character(len=1) :: l
   
   real(dp) :: distance ! distance for the nearest neighbours search
-  										 ! could be used as integer do define a coordination sphere number
-  										 ! if mode='csphere'
+                       ! could be used as integer do define a coordination sphere number
+                       ! if mode='csphere'
   character(len=10) :: mode ! mode for the nearest neighbours search
 
   namelist /exchanges/ nz1, nz2, nz3, height, emin, emax, distance, iverbosity, mode, l, atom_of_interest
 
   ! default values
-	nz1 = 150
-	nz2 = 350
-	nz3 = 150
-	height = 0.5
-	emin = -30
-	emax = 0.05
-	distance = 8.d-1
-	mode = 'distance'
-	l = 'd'
-	atom_of_interest = -100
-	
+  nz1 = 150
+  nz2 = 350
+  nz3 = 150
+  height = 0.5
+  emin = -30
+  emax = 0.05
+  distance = 8.d-1
+  mode = 'distance'
+  l = 'd'
+  atom_of_interest = -100
+  
   call system_clock(time_start,count_rate)
 
   write(stdout,'(/,5x,a66)') '------------------------------------------------------------------'
   write(stdout,'(5x,a66)')   '                      Program EXCHANGES                           '
   write(stdout,'(5x,a66)')   ' for calculation of exchange parameters of the Heisenberg model.  '
-	write(stdout,'(/,5x,a66)') 'Please cite "D. M. Korotin et al., Phys. Rev. B 91, 224405 (2015)"'
-	write(stdout,'(5x,a66)')   '    in publications or presentations arising from this work.      '
-	write(stdout,'(5x,a66,/)') '------------------------------------------------------------------'
+  write(stdout,'(/,5x,a66)') 'Please cite "D. M. Korotin et al., Phys. Rev. B 91, 224405 (2015)"'
+  write(stdout,'(5x,a66)')   '    in publications or presentations arising from this work.      '
+  write(stdout,'(5x,a66,/)') '------------------------------------------------------------------'
+
+  write(stdout,'(/,5x,a11,i3,a8,/)') 'Running in ', OMP_get_max_threads(), ' threads'
 
   read(stdin, exchanges, iostat=ios)
   if( ios .ne. 0 ) stop "Can't read input"
@@ -62,42 +65,42 @@ program exchange_parameters
   if(atom_of_interest == -100) atom_of_interest = block_atom(1)
 
   ! debug
- 	if( iverbosity .ge. 3) then
-		! output H(0)
-		allocate( hksum(hdim,hdim,nspin) )
-		hksum = cmplx(0.0,0.0,dp)
+  if( iverbosity .ge. 3) then
+    ! output H(0)
+    allocate( hksum(hdim,hdim,nspin) )
+    hksum = cmplx(0.0,0.0,dp)
 
-		do i=1, nkp
-			hksum(:,:,:) = hksum(:,:,:) + h(:,:,i,:)*wk(i)
-		end do
+    do i=1, nkp
+      hksum(:,:,:) = hksum(:,:,:) + h(:,:,i,:)*wk(i)
+    end do
 
-		do i=1, nspin
-			write(stdout,'(/,5x,a13,i2,a1)') 'H(0) for spin', i, ':'
-			call output_matrix_by_blocks(hdim,dreal(hksum(:,:,i)))
-		end do
+    do i=1, nspin
+      write(stdout,'(/,5x,a13,i2,a1)') 'H(0) for spin', i, ':'
+      call output_matrix_by_blocks(hdim,dreal(hksum(:,:,i)))
+    end do
 
-		deallocate( hksum )	
-	end if
-	! end of debug
+    deallocate( hksum ) 
+  end if
+  ! end of debug
   
   ! Output of the readed values
   write(stdout,'(/,5x,a14,f12.9,a5)') 'Cell constant:', alat, 'Bohr'
   write(stdout,'(5x,20a)') 'Cell vectors (rows):'
   do i = 1, 3
-  	write(stdout,'(7x,3f9.5)') cell(:,i)
+    write(stdout,'(7x,3f9.5)') cell(:,i)
   end do
   write(stdout,'(5x,a26)') 'Atoms of the initial cell:'
   do i = 1, natoms
-  	write(stdout,'(7x,a3,x,3f9.5)') atomlabel(i), tau(:,i)
+    write(stdout,'(7x,a3,x,3f9.5)') atomlabel(i), tau(:,i)
   end do
   
   write(stdout,'(/,5x,a71)') 'We have the following basis for the hamiltonian and the green function:'
   write(stdout,'(5x,i3,a20,i3,a8)') hdim, ' orbitals grouped in', nblocks, ' blocks:'
   do i=1, nblocks
-  	write(fmt,'(i1)') block_dim(i)
-  	write(stdout,'(5x,a3,a7,i2,a2,3x,i1,x,a,a11,'//adjustl(fmt)//'a11,a1)') &
-  			adjustr(atomlabel(block_atom(i))), ' (atom ', block_atom(i), '):', &
-  			block_dim(i),block_l(i), '-orbitals (', (orbitals(block_orbitals(i,j)), j=1, block_dim(i)), ')'
+    write(fmt,'(i1)') block_dim(i)
+    write(stdout,'(5x,a3,a7,i2,a2,3x,i1,x,a,a11,'//adjustl(fmt)//'a11,a1)') &
+        adjustr(atomlabel(block_atom(i))), ' (atom ', block_atom(i), '):', &
+        block_dim(i),block_l(i), '-orbitals (', (orbitals(block_orbitals(i,j)), j=1, block_dim(i)), ')'
   end do
   
   call atoms_list(mode,distance,atom_of_interest,l)
@@ -106,11 +109,11 @@ program exchange_parameters
   write(stdout,'(/5x,a17,i4,a8)') 'We will consider ', nnnbrs,' atoms: '
 
   do i = 1, nnnbrs
-  	pos_delta = sqrt( (taunew(1,i)-tau(1,atom_of_interest))**2 + &
-  								(taunew(2,i)-tau(2,atom_of_interest))**2 + &
-									(taunew(3,i)-tau(3,atom_of_interest))**2 )
-  	write(stdout,'(5x,i2,a2,a3,x,3f9.5,3x,a12,f9.5,a)') i, ': ', &
-  		atomlabel( block_atom( parent(i) ) ), taunew(:,i), '( distance =', pos_delta, ')'
+    pos_delta = sqrt( (taunew(1,i)-tau(1,atom_of_interest))**2 + &
+                  (taunew(2,i)-tau(2,atom_of_interest))**2 + &
+                  (taunew(3,i)-tau(3,atom_of_interest))**2 )
+    write(stdout,'(5x,i2,a2,a3,x,3f9.5,3x,a12,f9.5,a)') i, ': ', &
+      atomlabel( block_atom( parent(i) ) ), taunew(:,i), '( distance =', pos_delta, ')'
   end do
 
 
@@ -150,8 +153,8 @@ program exchange_parameters
 
   ! debug
   if( iverbosity .ge. 3) then
-  	write(stdout,'(/,5x,a15)') 'Computed delta:'
-  	call output_matrix_by_blocks(hdim,dreal(delta))
+    write(stdout,'(/,5x,a15)') 'Computed delta:'
+    call output_matrix_by_blocks(hdim,dreal(delta))
   end if
   ! end of debug
 
@@ -220,7 +223,7 @@ program exchange_parameters
         write(stdout,'(/7x,a62)') "Orbital exchange interaction matrix J_{i,j,m,n} (in K and meV):"
         DO i=1,block_dim(parent(ia))
           write(stdout, '(7x,5i5,8x,5f9.5)' ) INT(Jorb(ia,ja,i,1:block_dim(parent(ia)))/kb_ev), &
-          																		Jorb(ia,ja,i,1:block_dim(parent(ia)))*1.d3
+                                              Jorb(ia,ja,i,1:block_dim(parent(ia)))*1.d3
         END DO
 
     END DO
@@ -278,205 +281,205 @@ END SUBROUTINE compute_delta
 
 subroutine atoms_list(mode,distance,atom_of_interest,l_of_interest)
 
-	use iomodule
-	use parameters, only : dp, maxnnbrs
-	use general
-	
-	implicit none
-	character(len=10), intent(in) :: mode
-	real(dp), intent(in) :: distance
-	character(len=1), intent(in) :: l_of_interest
-	integer, intent(in) :: atom_of_interest
+  use iomodule
+  use parameters, only : dp, maxnnbrs
+  use general
+  
+  implicit none
+  character(len=10), intent(in) :: mode
+  real(dp), intent(in) :: distance
+  character(len=1), intent(in) :: l_of_interest
+  integer, intent(in) :: atom_of_interest
 
-	! temp storage
-	real(dp) :: taunew_(3,maxnnbrs), vect(3), d
-	integer :: parent_(maxnnbrs), nnnbrs_
+  ! temp storage
+  real(dp) :: taunew_(3,maxnnbrs), vect(3), d
+  integer :: parent_(maxnnbrs), nnnbrs_
 
-	integer :: i,j, iblock, nvect, index
-	logical :: have_atom_already
+  integer :: i,j, iblock, nvect, index
+  logical :: have_atom_already
 
-	nnnbrs = 0
-	parent = -1
-	taunew = -1000
+  nnnbrs = 0
+  parent = -1
+  taunew = -1000
 
-	!call find_nnbrs(natoms,tau,cell,block_atom(1),distance,nnnbrs_,taunew_,parent_)
-	call find_nnbrs(natoms,tau,cell,atom_of_interest,distance,nnnbrs_,taunew_,parent_)
+  !call find_nnbrs(natoms,tau,cell,block_atom(1),distance,nnnbrs_,taunew_,parent_)
+  call find_nnbrs(natoms,tau,cell,atom_of_interest,distance,nnnbrs_,taunew_,parent_)
 
-	select case ( trim(mode) )
-		case ('list') ! list mode
-			call find_section(stdin,'ATOMS_LIST')
-			read(stdin,*) nvect
+  select case ( trim(mode) )
+    case ('list') ! list mode
+      call find_section(stdin,'ATOMS_LIST')
+      read(stdin,*) nvect
 
-			do i = 1, nvect
-				read(stdin,*) vect(1:3)
-				do j = 1, nnnbrs_
-					call haa(taunew_, vect, have_atom_already, index)
-					if( .not. have_atom_already ) then
-						write(stdout,'(/,"Error: Can not find atom in position", 3f9.5, " within sphere of ",f9.5," with ",a2," orbitals"/)') &
-							vect,distance,l_of_interest
-						stop ' '
-					else
-						nnnbrs = nnnbrs + 1
-						parent(nnnbrs) = parent_(index)
-						taunew(:,nnnbrs) = vect
-						exit
-					end if
-				end do
-			end do
-			! reset arrays
-			nnnbrs_ = nnnbrs
-			parent_ = parent
-			taunew_ = taunew
+      do i = 1, nvect
+        read(stdin,*) vect(1:3)
+        do j = 1, nnnbrs_
+          call haa(taunew_, vect, have_atom_already, index)
+          if( .not. have_atom_already ) then
+            write(stdout,'(/,"Error: Can not find atom in position", 3f9.5, " within sphere of ",f9.5," with ",a2," orbitals"/)') &
+              vect,distance,l_of_interest
+            stop ' '
+          else
+            nnnbrs = nnnbrs + 1
+            parent(nnnbrs) = parent_(index)
+            taunew(:,nnnbrs) = vect
+            exit
+          end if
+        end do
+      end do
+      ! reset arrays
+      nnnbrs_ = nnnbrs
+      parent_ = parent
+      taunew_ = taunew
 
-		case default ! 'distance mode'
+    case default ! 'distance mode'
 
-			! We want to consider all hamilt atoms anyway
-			do i = 1, natoms
-				call haa(taunew_, tau(:,i), have_atom_already, index)
-				if( .not. have_atom_already ) then
-					nnnbrs_ = nnnbrs_+1
-					taunew_(:,nnnbrs_) = tau(:,i)
-					parent_(nnnbrs_) = i
-				end if
-			end do
+      ! We want to consider all hamilt atoms anyway
+      do i = 1, natoms
+        call haa(taunew_, tau(:,i), have_atom_already, index)
+        if( .not. have_atom_already ) then
+          nnnbrs_ = nnnbrs_+1
+          taunew_(:,nnnbrs_) = tau(:,i)
+          parent_(nnnbrs_) = i
+        end if
+      end do
 
-	end select
+  end select
 
-	nnnbrs = 0
-	parent = -1
-	taunew = -1000
+  nnnbrs = 0
+  parent = -1
+  taunew = -1000
 
-	!filter atoms by l
-	do i = 1, nnnbrs_
-		do iblock = 1, nblocks
-			if( block_atom(iblock) .eq. parent_(i) .and. block_l(iblock) .eq. l_of_interest ) then
-				nnnbrs = nnnbrs + 1
-				parent(nnnbrs) = iblock
-				taunew(:,nnnbrs) = taunew_(:,i)
-			end if
-		end do 
-	end do
+  !filter atoms by l
+  do i = 1, nnnbrs_
+    do iblock = 1, nblocks
+      if( block_atom(iblock) .eq. parent_(i) .and. block_l(iblock) .eq. l_of_interest ) then
+        nnnbrs = nnnbrs + 1
+        parent(nnnbrs) = iblock
+        taunew(:,nnnbrs) = taunew_(:,i)
+      end if
+    end do 
+  end do
 
 end subroutine atoms_list
 
 subroutine read_crystal()
 
-	use iomodule
-	use parameters, only : dp
-	use general
-	
-	implicit none
-	integer :: i,j
-	character(len=3) :: dummy
-	character :: l_symbol
+  use iomodule
+  use parameters, only : dp
+  use general
+  
+  implicit none
+  integer :: i,j
+  character(len=3) :: dummy
+  character :: l_symbol
 
-	call open_input_file(iunsystem,'system.am')
+  call open_input_file(iunsystem,'system.am')
 
-	call find_section(iunsystem,'&cell')
-	read(iunsystem,*) alat
-	
-	do i = 1,3
-		read(iunsystem,*) cell(:,i)
-	end do
-	
-	call find_section(iunsystem,'&atoms')
-	read(iunsystem,*) natoms
-	allocate( tau(3,natoms) )
-	allocate( atomlabel(natoms) )
+  call find_section(iunsystem,'&cell')
+  read(iunsystem,*) alat
+  
+  do i = 1,3
+    read(iunsystem,*) cell(:,i)
+  end do
+  
+  call find_section(iunsystem,'&atoms')
+  read(iunsystem,*) natoms
+  allocate( tau(3,natoms) )
+  allocate( atomlabel(natoms) )
 
-	do i=1, natoms
-		read(iunsystem,*) atomlabel(i), tau(:,i)
-	end do
+  do i=1, natoms
+    read(iunsystem,*) atomlabel(i), tau(:,i)
+  end do
 
-	call find_section(iunsystem,'&basis')
-	read(iunsystem,*) i, nblocks
-	if(i .ne. hdim) stop 'Basis dimention in system.am and hamilt.am are unequal'
+  call find_section(iunsystem,'&basis')
+  read(iunsystem,*) i, nblocks
+  if(i .ne. hdim) stop 'Basis dimention in system.am and hamilt.am are unequal'
 
-	allocate( block_atom(nblocks) )
-	allocate( block_l(nblocks) )
-	allocate( block_dim(nblocks) )
-	allocate( block_orbitals(nblocks,7) )
-	allocate( block_start(nblocks) )
-	block_orbitals = 0
+  allocate( block_atom(nblocks) )
+  allocate( block_l(nblocks) )
+  allocate( block_dim(nblocks) )
+  allocate( block_orbitals(nblocks,7) )
+  allocate( block_start(nblocks) )
+  block_orbitals = 0
 
-	do i = 1, nblocks
-		read(iunsystem,*) dummy, block_atom(i), block_l(i), block_dim(i), block_start(i), block_orbitals(i,1:block_dim(i))
-	end do
+  do i = 1, nblocks
+    read(iunsystem,*) dummy, block_atom(i), block_l(i), block_dim(i), block_start(i), block_orbitals(i,1:block_dim(i))
+  end do
 
-	call find_section(iunsystem,'&efermi')
-	read(iunsystem,*) efermi
+  call find_section(iunsystem,'&efermi')
+  read(iunsystem,*) efermi
 
-	close(iunsystem)
+  close(iunsystem)
 
 end subroutine read_crystal
 
 subroutine read_hamilt()
 
-	use iomodule
-	use parameters, only : dp
-	use general
-	
-	implicit none
-	integer :: i,j,ispin, ik
-	real(dp) :: Hre, Him
+  use iomodule
+  use parameters, only : dp
+  use general
+  
+  implicit none
+  integer :: i,j,ispin, ik
+  real(dp) :: Hre, Him
 
-	call open_input_file(iunhamilt,'hamilt.am')
+  call open_input_file(iunhamilt,'hamilt.am')
 
-	call find_section(iunhamilt,'&nspin')
-	read(iunhamilt,*) nspin
-	if (nspin .ne. 2) stop 'A spin-polarized hamiltonian is neccessary'
+  call find_section(iunhamilt,'&nspin')
+  read(iunhamilt,*) nspin
+  if (nspin .ne. 2) stop 'A spin-polarized hamiltonian is neccessary'
 
-	call find_section(iunhamilt,'&nkp')
-	read(iunhamilt,*) nkp
+  call find_section(iunhamilt,'&nkp')
+  read(iunhamilt,*) nkp
 
-	call find_section(iunhamilt,'&dim')
-	read(iunhamilt,*) hdim
+  call find_section(iunhamilt,'&dim')
+  read(iunhamilt,*) hdim
 
-	allocate( h(hdim,hdim,nkp,nspin) )
-	allocate( wk(nkp) )
-	allocate( xk(3,nkp) )
+  allocate( h(hdim,hdim,nkp,nspin) )
+  allocate( wk(nkp) )
+  allocate( xk(3,nkp) )
 
-	h = cmplx(0.0,0.0)
-	wk = 0.0
-	xk = 0.0
+  h = cmplx(0.0,0.0)
+  wk = 0.0
+  xk = 0.0
 
-	call find_section(iunhamilt,'&kpoints')
-	do ik=1, nkp
-		read(iunhamilt,*) wk(ik), xk(:,ik)
-	end do
-			
-	call find_section(iunhamilt,'&hamiltonian')
-	
-	do ispin = 1, nspin
-		do ik = 1, nkp
-			do i=1, hdim
-				do j=i, hdim
-					read(iunhamilt,*) Hre, Him
-					h(i,j,ik,ispin) = cmplx(Hre,Him)
-					h(j,i,ik,ispin) = dconjg( h(i,j,ik,ispin) )
-				end do
-			end do
-		end do
-	end do
-	
-	close(iunhamilt)
+  call find_section(iunhamilt,'&kpoints')
+  do ik=1, nkp
+    read(iunhamilt,*) wk(ik), xk(:,ik)
+  end do
+      
+  call find_section(iunhamilt,'&hamiltonian')
+  
+  do ispin = 1, nspin
+    do ik = 1, nkp
+      do i=1, hdim
+        do j=i, hdim
+          read(iunhamilt,*) Hre, Him
+          h(i,j,ik,ispin) = cmplx(Hre,Him)
+          h(j,i,ik,ispin) = dconjg( h(i,j,ik,ispin) )
+        end do
+      end do
+    end do
+  end do
+  
+  close(iunhamilt)
 
 end subroutine read_hamilt
 
 subroutine clear()
 
-	use general
+  use general
 
-	if( allocated(tau) ) deallocate(tau)
-	if( allocated(atomlabel) ) deallocate(atomlabel)
-	if( allocated(h) ) deallocate(h)
-	if( allocated(wk) ) deallocate(wk)
-	if( allocated(xk) ) deallocate(xk)
-	if( allocated(block_atom) ) deallocate( block_atom )
-	if( allocated(block_l) ) deallocate( block_l )
-	if( allocated(block_dim) ) deallocate( block_dim )
-	if( allocated(block_orbitals) ) deallocate( block_orbitals )
-	if( allocated(block_start) ) deallocate(block_start)
+  if( allocated(tau) ) deallocate(tau)
+  if( allocated(atomlabel) ) deallocate(atomlabel)
+  if( allocated(h) ) deallocate(h)
+  if( allocated(wk) ) deallocate(wk)
+  if( allocated(xk) ) deallocate(xk)
+  if( allocated(block_atom) ) deallocate( block_atom )
+  if( allocated(block_l) ) deallocate( block_l )
+  if( allocated(block_dim) ) deallocate( block_dim )
+  if( allocated(block_orbitals) ) deallocate( block_orbitals )
+  if( allocated(block_start) ) deallocate(block_start)
 
 end subroutine clear
 
