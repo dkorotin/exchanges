@@ -10,7 +10,6 @@ program exchange_parameters
 
   integer :: i, j, time_start, time_end, count_rate, nz, ia, ja, idim, jdim, iz, istart, jstart, iend, jend
   character(len=3) :: fmt='   ' ! is used for pretty output only
-  character(len=1) :: l
   real(dp) :: pos_delta
   complex(dp), allocatable :: z(:), G(:,:,:,:,:,:), delta(:,:), tmp1(:,:), hksum(:,:,:)
   complex(dp) :: zstep, tmp2
@@ -22,13 +21,16 @@ program exchange_parameters
   ! Intergation mesh:
   integer :: nz1, nz2, nz3
   real(dp) :: emin, emax, height
-
+  
+  integer :: atom_of_interest
+  character(len=1) :: l
+  
   real(dp) :: distance ! distance for the nearest neighbours search
   										 ! could be used as integer do define a coordination sphere number
   										 ! if mode='csphere'
   character(len=10) :: mode ! mode for the nearest neighbours search
 
-  namelist /exchanges/ nz1, nz2, nz3, height, emin, emax, distance, iverbosity, mode, l
+  namelist /exchanges/ nz1, nz2, nz3, height, emin, emax, distance, iverbosity, mode, l, atom_of_interest
 
   ! default values
 	nz1 = 150
@@ -40,6 +42,7 @@ program exchange_parameters
 	distance = 8.d-1
 	mode = 'distance'
 	l = 'd'
+	atom_of_interest = -100
 	
   call system_clock(time_start,count_rate)
 
@@ -55,6 +58,8 @@ program exchange_parameters
   
   call read_hamilt()
   call read_crystal()
+
+  if(atom_of_interest == -100) atom_of_interest = block_atom(1)
 
   ! debug
  	if( iverbosity .ge. 3) then
@@ -95,15 +100,15 @@ program exchange_parameters
   			block_dim(i),block_l(i), '-orbitals (', (orbitals(block_orbitals(i,j)), j=1, block_dim(i)), ')'
   end do
   
-  call atoms_list(mode,distance,l)
+  call atoms_list(mode,distance,atom_of_interest,l)
 
   ! Pretty output
   write(stdout,'(/5x,a17,i4,a8)') 'We will consider ', nnnbrs,' atoms: '
 
   do i = 1, nnnbrs
-  	pos_delta = sqrt( (taunew(1,i)-tau(1,block_atom(1)))**2 + &
-  								(taunew(2,i)-tau(2,block_atom(1)))**2 + &
-									(taunew(3,i)-tau(3,block_atom(1)))**2 )
+  	pos_delta = sqrt( (taunew(1,i)-tau(1,atom_of_interest))**2 + &
+  								(taunew(2,i)-tau(2,atom_of_interest))**2 + &
+									(taunew(3,i)-tau(3,atom_of_interest))**2 )
   	write(stdout,'(5x,i2,a2,a3,x,3f9.5,3x,a12,f9.5,a)') i, ': ', &
   		atomlabel( block_atom( parent(i) ) ), taunew(:,i), '( distance =', pos_delta, ')'
   end do
@@ -271,7 +276,7 @@ subroutine compute_delta(h,delta)
 
 END SUBROUTINE compute_delta
 
-subroutine atoms_list(mode,distance,l_of_interest)
+subroutine atoms_list(mode,distance,atom_of_interest,l_of_interest)
 
 	use iomodule
 	use parameters, only : dp, maxnnbrs
@@ -281,6 +286,7 @@ subroutine atoms_list(mode,distance,l_of_interest)
 	character(len=10), intent(in) :: mode
 	real(dp), intent(in) :: distance
 	character(len=1), intent(in) :: l_of_interest
+	integer, intent(in) :: atom_of_interest
 
 	! temp storage
 	real(dp) :: taunew_(3,maxnnbrs), vect(3), d
@@ -293,7 +299,8 @@ subroutine atoms_list(mode,distance,l_of_interest)
 	parent = -1
 	taunew = -1000
 
-	call find_nnbrs(natoms,tau,cell,block_atom(1),distance,nnnbrs_,taunew_,parent_)
+	!call find_nnbrs(natoms,tau,cell,block_atom(1),distance,nnnbrs_,taunew_,parent_)
+	call find_nnbrs(natoms,tau,cell,atom_of_interest,distance,nnnbrs_,taunew_,parent_)
 
 	select case ( trim(mode) )
 		case ('list') ! list mode
