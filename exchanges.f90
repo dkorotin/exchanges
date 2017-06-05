@@ -298,6 +298,8 @@ subroutine atoms_list(mode,distance,atom_of_interest,l_of_interest)
   integer :: i,j, iblock, nvect, index
   logical :: have_atom_already
 
+  character(len=40) :: currentline
+
   nnnbrs = 0
   parent = -1
   taunew = -1000
@@ -307,7 +309,13 @@ subroutine atoms_list(mode,distance,atom_of_interest,l_of_interest)
 
   select case ( trim(mode) )
     case ('list') ! list mode
-      call find_section(stdin,'ATOMS_LIST')
+      ! a primitive way to find ATOMS_LIST string in stdin
+      currentline = ''
+      do while( ios .ge. 0 .AND. trim(currentline) .ne. 'ATOMS_LIST' )
+        read(stdin, fmt="(a40)", iostat=ios ) currentline
+        if ( ios .gt. 0 ) stop "Can not find ATOMS_LIST in stdin"
+      end do
+      !call find_section(stdin,'ATOMS_LIST')
       read(stdin,*) nvect
 
       do i = 1, nvect
