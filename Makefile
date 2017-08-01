@@ -1,14 +1,16 @@
 PROG = exchanges.x 
 
 #gfortan Mac Os
-FC = gfortran 
-FFLAGS = -fopenmp -Og -O2 -g
-LIBS = -fopenmp -framework Accelerate #-L/usr/local/opt/lapack/lib/ -llapack -lblas
+# FC = gfortran 
+# FFLAGS = -fopenmp -Og -O2 -g
+# LIBS = -fopenmp -framework Accelerate #-L/usr/local/opt/lapack/lib/ -llapack -lblas
 
 # Intel fortran linux
-# FC = ifort 
-# FFLAGS = -openmp -Og -O2 -g
-# LIBS = -openmp -L/usr/local/opt/lapack/lib/ -llapack -lblas
+ FC = ifort 
+ FFLAGS = -qopenmp -O2 -g -mavx
+ LIBS = -qopenmp -lmkl_intel_lp64  -lmkl_sequential -lmkl_core
+#uncomment for debug:
+# FFLAGS = -qopenmp -O0 -g -mavx -traceback -check
 
 # gfortran linux
 # FC = gfortran 
