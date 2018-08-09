@@ -28,7 +28,7 @@ module iomodule
     sec = trim(sect)
     rewind(unit)
     
-    do while( ios .ge. 0 .AND. trim(currentline) .ne. sec )
+    do while( ios .ge. 0 .AND. adjustl(trim(currentline)) .ne. sec )
       read(unit=unit, fmt="(a40)", iostat=ios ) currentline
       if ( ios .gt. 0 ) stop "Read error in file unit"
 
