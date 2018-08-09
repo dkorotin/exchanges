@@ -38,7 +38,7 @@ program exchange_parameters
   nz2 = 350
   nz3 = 150
   height = 0.5
-  emin = -30
+  emin = -30.0
   emax = 0.05
   distance = 8.d-1
   mode = 'distance'
@@ -58,6 +58,10 @@ program exchange_parameters
 
   read(stdin, exchanges, iostat=ios)
   if( ios .ne. 0 ) stop "Can't read input"
+
+  write(stdout,'(5x,a34)') 'Parameters of integration contour:'
+  write(stdout,'(5x,a7,f6.2,a9,f5.2,a11,f4.2,a5)') 'emin = ', emin, '  emax = ', emax, '  height = ', height,' (eV)'
+  write(stdout,'(5x,a6,i3,a8,i3,a8,i3)') 'nz1 = ', nz1, '  nz2 = ', nz2, '  nz3 = ', nz3
   
   call read_hamilt()
   call read_crystal()
