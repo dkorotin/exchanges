@@ -61,7 +61,7 @@ program exchange_parameters
 
   write(stdout,'(5x,a34)') 'Parameters of integration contour:'
   write(stdout,'(5x,a7,f6.2,a9,f5.2,a11,f4.2,a5)') 'emin = ', emin, '  emax = ', emax, '  height = ', height,' (eV)'
-  write(stdout,'(5x,a6,i3,a8,i3,a8,i3)') 'nz1 = ', nz1, '  nz2 = ', nz2, '  nz3 = ', nz3
+  write(stdout,'(5x,a6,i4,a8,i4,a8,i4)') 'nz1 = ', nz1, '  nz2 = ', nz2, '  nz3 = ', nz3
   
   call read_hamilt()
   call read_crystal()
