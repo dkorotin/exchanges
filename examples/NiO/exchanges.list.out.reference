@@ -7,8 +7,22 @@
          in publications or presentations arising from this work.      
      ------------------------------------------------------------------
 
+        We are using the model with the exchange term defined as:      
 
-     Cell constant: 7.882813400 Bohr
+                        H = \sum_ij J_{ij} e_i e_j,                    
+
+      where e_i,j are unit vectors and sum runs once over ions pairs   
+
+     ------------------------------------------------------------------
+
+
+     Running in   4 threads
+
+     Parameters of integration contour:
+     emin = -15.000  emax =  0.100  height = 0.200 (eV)
+     nz1 =  250  nz2 =  450  nz3 =  250
+
+     Cell constant (alat)  7.882813400 Bohr
      Cell vectors (rows):
          0.50000  0.50000  1.00000
          0.50000  1.00000  0.50000
@@ -20,16 +34,16 @@
        O1    1.50000  1.50000  1.50000
 
      We have the following basis for the hamiltonian and the green function:
-      16 orbitals grouped in 4 blocks:
+      16 orbitals grouped in  4 blocks:
      Ni1 (atom  1):   5 d-orbitals (3z^2-1     xz         yz         x^2-y^2    xy         )
      Ni2 (atom  2):   5 d-orbitals (3z^2-1     xz         yz         x^2-y^2    xy         )
       O1 (atom  3):   3 p-orbitals (z          x          y          )
       O1 (atom  4):   3 p-orbitals (z          x          y          )
 
      We will consider    3 atoms: 
-      1: Ni1   0.00000  0.00000  0.00000   ( distance =  0.00000)
-      2: Ni2  -0.50000 -0.50000  0.00000   ( distance =  0.70711)
-      3: Ni2   0.00000  0.00000  1.00000   ( distance =  1.00000)
+      1: Ni1   0.00000  0.00000  0.00000   ( distance =  0.00000 alat )
+      2: Ni2  -0.50000 -0.50000  0.00000   ( distance =  0.70711 alat )
+      3: Ni2   0.00000  0.00000  1.00000   ( distance =  1.00000 alat )
 
      Exchange interaction between atoms   1 and  2:   0.071 meV =     0 K (distance: 0.707)
 
@@ -103,4 +117,4 @@
         Orbital 4 occupation:  0.996
         Orbital 5 occupation:  1.000
 
-     Execution time:  118 seconds
+     Execution time:    5 seconds

@@ -35,11 +35,11 @@ program exchange_parameters
 
   ! default values
   nz1 = 150
-  nz2 = 350
+  nz2 = 3000
   nz3 = 150
-  height = 0.5
+  height = 0.01
   emin = -30.0
-  emax = 0.05
+  emax = 0.0
   distance = 8.d-1
   mode = 'distance'
   l = 'd'
@@ -64,7 +64,7 @@ program exchange_parameters
   if( ios .ne. 0 ) stop "Can't read input"
 
   write(stdout,'(5x,a34)') 'Parameters of integration contour:'
-  write(stdout,'(5x,a7,f6.2,a9,f5.2,a11,f4.2,a5)') 'emin = ', emin, '  emax = ', emax, '  height = ', height,' (eV)'
+  write(stdout,'(5x,a7,f7.3,a9,f6.3,a11,f5.3,a5)') 'emin = ', emin, '  emax = ', emax, '  height = ', height,' (eV)'
   write(stdout,'(5x,a6,i4,a8,i4,a8,i4)') 'nz1 = ', nz1, '  nz2 = ', nz2, '  nz3 = ', nz3
   
   call read_hamilt()
@@ -92,7 +92,7 @@ program exchange_parameters
   ! end of debug
   
   ! Output of the readed values
-  write(stdout,'(/,5x,a20,f12.9,a5)') 'Cell constant (alat):', alat, 'Bohr'
+  write(stdout,'(/,5x,a20,f13.9,a5)') 'Cell constant (alat):', alat, 'Bohr'
   write(stdout,'(5x,20a)') 'Cell vectors (rows):'
   do i = 1, 3
     write(stdout,'(7x,3f9.5)') cell(:,i)
