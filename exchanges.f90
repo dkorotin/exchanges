@@ -53,6 +53,10 @@ program exchange_parameters
   write(stdout,'(/,5x,a66)') 'Please cite "D. M. Korotin et al., Phys. Rev. B 91, 224405 (2015)"'
   write(stdout,'(5x,a66)')   '    in publications or presentations arising from this work.      '
   write(stdout,'(5x,a66,/)') '------------------------------------------------------------------'
+  write(stdout,'(5x,a66,/)') '   We are using the model with the exchange term defined as:      '
+  write(stdout,'(5x,a66,/)') '                   H = \sum_ij J_{ij} e_i e_j,                    '
+  write(stdout,'(5x,a66,/)') ' where e_i,j are unit vectors and sum runs once over ions pairs   '
+  write(stdout,'(5x,a66,/)') '------------------------------------------------------------------'
 
   write(stdout,'(/,5x,a11,i3,a8,/)') 'Running in ', OMP_get_max_threads(), ' threads'
 
@@ -88,7 +92,7 @@ program exchange_parameters
   ! end of debug
   
   ! Output of the readed values
-  write(stdout,'(/,5x,a14,f12.9,a5)') 'Cell constant:', alat, 'Bohr'
+  write(stdout,'(/,5x,a20,f12.9,a5)') 'Cell constant (alat):', alat, 'Bohr'
   write(stdout,'(5x,20a)') 'Cell vectors (rows):'
   do i = 1, 3
     write(stdout,'(7x,3f9.5)') cell(:,i)
@@ -116,8 +120,8 @@ program exchange_parameters
     pos_delta = sqrt( (taunew(1,i)-tau(1,atom_of_interest))**2 + &
                   (taunew(2,i)-tau(2,atom_of_interest))**2 + &
                   (taunew(3,i)-tau(3,atom_of_interest))**2 )
-    write(stdout,'(5x,i2,a2,a3,x,3f9.5,3x,a12,f9.5,a)') i, ': ', &
-      atomlabel( block_atom( parent(i) ) ), taunew(:,i), '( distance =', pos_delta, ')'
+    write(stdout,'(5x,i2,a2,a3,x,3f9.5,3x,a12,f9.5,a7)') i, ': ', &
+      atomlabel( block_atom( parent(i) ) ), taunew(:,i), '( distance =', pos_delta, ' alat )'
   end do
 
 

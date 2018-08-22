@@ -1,6 +1,6 @@
 <!DOCTYPE html><html><head><meta charset="utf-8"><style>@font-face {
   font-family: octicons-anchor;
-  src: url(data:font/woff;charset=utf-8;base64,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) format('woff');
+  src: url(https://cdnjs.cloudflare.com/ajax/libs/octicons/4.4.0/font/octicons.woff) format('woff');
 }
 
 * {
@@ -721,69 +721,80 @@ pre {
   position: relative;
   border-color: #4078c0;
 }
+
+@media print {
+  body .markdown-body {
+    padding: 0;
+    border: none;
+  }
+}
 </style><title>README</title></head><body><article class="markdown-body"><h1>
 <a id="user-content-introduction" class="anchor" href="#introduction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Introduction</h1>
-
 <p>The document describes how to calculate Heisenberg exchange parameters for a magnetic compound using Green's functions formalism.</p>
-
 <p>The calculation consists of 3 independent parts:</p>
-
 <ul>
-<li><p>Self consistent spin-polarized DFT calculation. Here and below we imply that you use Quantum ESPRESSO (QE) package for such calculation.</p></li>
-<li><p>Generation of a model Hamiltonian in Wannier functions basis. The basis should include <em>d</em>-states of magnetic ions and sometimes <em>p</em>-states of the nearest ligands. This could be done using wannier_ham.x code from QE postprocessing tools. The Hamiltonian should be stored in the <a href="http://amulet-code.org">AMULET code</a> file format. <strong>Please use the latest stable QE version (5.3.0 and above) for the Hamiltonian production.</strong></p></li>
-<li><p>Calculation of the exchange parameters using exchanges code. The code uses as input only two files: <em>system.am</em> and <em>hamilt.am</em> from the previous step.</p></li>
+<li>
+<p>Self consistent spin-polarized DFT calculation. Here and below we imply that you use Quantum ESPRESSO (QE) package for such calculation.</p>
+</li>
+<li>
+<p>Generation of a model Hamiltonian in Wannier functions basis. The basis should include <em>d</em>-states of magnetic ions and sometimes <em>p</em>-states of the nearest ligands. This could be done using wannier_ham.x code from QE postprocessing tools. The Hamiltonian should be stored in the <a href="http://amulet-code.org" rel="nofollow">AMULET code</a> file format. <strong>Please use the latest stable QE version (5.3.0 and above) for the Hamiltonian production.</strong></p>
+</li>
+<li>
+<p>Calculation of the exchange parameters using exchanges code. The code uses as input only two files: <em>system.am</em> and <em>hamilt.am</em> from the previous step.</p>
+</li>
 </ul>
-
+<h1>
+<a id="user-content-the-model" class="anchor" href="#the-model" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>The model</h1>
+<p>We are using the model with the exchange term defined as:</p>
+<pre><code>H = \sum_ij J_{ij}*e_i*e_j,
+</code></pre>
+<p>where e_i, and e_j are unit vectors and sum runs once over ions pairs.</p>
+<p>If you want to estimate Curie/Neel temperature from obtained exchanges, please keep in mind that the following formula should be used:</p>
+<pre><code>T = N_nn*J_calc*(1/3)*S(S+1)/S^2,
+</code></pre>
+<p>where N_nn - number of neigbouring atoms with calculated exchange parameter J_calc, S is total spin moment of the atom.</p>
 <h1>
 <a id="user-content-step-1-self-consistent-dft-calculation" class="anchor" href="#step-1-self-consistent-dft-calculation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Step 1: Self consistent DFT calculation</h1>
-
 <p>Use Quantum ESPRESSO as usual. To obtain a reliable exchange parameters on the last step one should start from a reliable electronic structure on the first step. Perform a spin-polarized calculation on a regular k-points grid within full Brillouin zone. Reciprocal space integration should be performed with gaussian smearing. Use the following keys:</p>
-
 <pre><code>nspin = 2
 nosym = .true.
 noinv = .true.
 occupations = 'smearing'
 degauss = set a reasonable value for your system
 </code></pre>
-
 <p>One is allowed to perform scf calculation in parallel mode, but <code>wf_collect = .true.</code> key must be set, since wannier_ham.x and exchanges.x codes are serial only.</p>
-
 <h1>
 <a id="user-content-step-2-hamiltonian-in-wannier-functions-basis-generation" class="anchor" href="#step-2-hamiltonian-in-wannier-functions-basis-generation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Step 2: Hamiltonian in Wannier functions basis generation.</h1>
-
-<p>The theoretical background for Wannier functions generation and Hamiltonian production procedure is described in <a href="http://www.springerlink.com/index/10.1140/epjb/e2008-00326-3">EPJB 65, 91 (2008)</a>. There is also an example in QE distributive (in <code>PP/examples/WannierHam_example</code> dir).</p>
-
+<p>The theoretical background for Wannier functions generation and Hamiltonian production procedure is described in <a href="http://www.springerlink.com/index/10.1140/epjb/e2008-00326-3" rel="nofollow">EPJB 65, 91 (2008)</a>. There is also an example in QE distributive (in <code>PP/examples/WannierHam_example</code> dir).</p>
 <p>Before you start the model Hamiltonian generation, you should know a symmetry of trial atomic orbitals that will be used for projection (typically these are transition metal d- plus, sometimes, the nearest ligands p-orbitals). And you should know numbers of bands (or energy interval) that you are going to reproduce with the model Hamiltonian. One of the simplest methods to determine the energy interval is to plot the partial densities of states for atomic orbitals with desired symmetry.
 <strong>It could be necessary often to include into the basis not only Wannier functions of d-symmetry, but p-orbitals like Wannier functions also. Please note, that exchange interaction parameters are computed on the next step only for d-states. Nevertheless, a superexchange via ligand's p-orbitals is taken into account with nondiagonal elements of Green's functions matrix.</strong></p>
-
 <p>Structure of the input file for wannier_ham.x (should be sent to stdin):</p>
-
 <pre><code>========================================================================
 NAMELIST: &amp;INPUTPP
    +--------------------------------------------------------------------
    Variable:       prefix
-
+   
    Type:           CHARACTER
    Default:        ' '
    Description:    as usual
    +--------------------------------------------------------------------
    +--------------------------------------------------------------------
    Variable:       outdir
-
+   
    Type:           CHARACTER
    Default:        ' '
    Description:    as usual
    +--------------------------------------------------------------------
    +--------------------------------------------------------------------
    Variable:       nwan
-
+   
    Type:           INTEGER
    Default:        ' '
    Description:    Number of Wannier functions
    +--------------------------------------------------------------------
    +--------------------------------------------------------------------
    Variable:       use_energy_int
-
+   
    Type:           LOGICAL
    Default:        '.FALSE.'
    Description:    If .true. bands will be defined not by numbers, but by
@@ -791,7 +802,7 @@ NAMELIST: &amp;INPUTPP
    +--------------------------------------------------------------------
    +--------------------------------------------------------------------
    Variable:       plot_bands
-
+   
    Type:           LOGICAL
    Default:        '.FALSE.'
    Description:    If .true. bands structures of original and model hamiltonian
@@ -799,7 +810,7 @@ NAMELIST: &amp;INPUTPP
    +--------------------------------------------------------------------
    +--------------------------------------------------------------------
    Variable:       form
-
+   
    Type:           character
    Default:        ' '
    Description:    Hamiltonian file format. Should be set to 'amulet' to obtain
@@ -810,11 +821,11 @@ NAMELIST: &amp;INPUTPP
 CARD: WANNIER_AC
 
    Definition of trial atomic functions and bands for Wannier generation
-
+   
    /////////////////////////////////////////
    // Syntax:                             //
    /////////////////////////////////////////
-
+   
     Wannier# 1 bands_from bands_to
     atom iatom
     l m
@@ -830,16 +841,16 @@ CARD: WANNIER_AC
     atom iatom
     l m
     ...
-
+   
    /////////////////////////////////////////
 
    ! Please note the Spin#2: block! It should exist (and repeat a Spin#1 block
     to obtain the spin-polarized Hamiltonian).
-
+   
    DESCRIPTION OF ITEMS: 
       +--------------------------------------------------------------------
       Variables:      bands_from, bands_to
-
+      
       Type:           REAL or INTEGER
       Description:    Defines Bloch functions subspace for projection
                       procedure. If use_energy_interval=.true. these are
@@ -847,68 +858,51 @@ CARD: WANNIER_AC
       +--------------------------------------------------------------------
       +--------------------------------------------------------------------
       Variables:      iatom
-
+      
       Type:           INTEGER
       Description:    Number of site on that Wannier function centered
       +--------------------------------------------------------------------
       +--------------------------------------------------------------------
       Variables:      l
-
+      
       Type:           CHARACTER
       Description:    Angular channel for trial wavefunction. 's', 'p' or 'd'
       +--------------------------------------------------------------------
       +--------------------------------------------------------------------
       Variables:      m
-
+      
       Type:           INTEGER
       Description:    Magnetic quantum number of trial orbital (from 1 to 5
                       for d-orbitals, from 1 to 3 for p-orbitals)
       +--------------------------------------------------------------------
 ===END OF CARD==========================================================
 </code></pre>
-
 <p>Run <code>wannier_ham.x &lt; your_input_file</code> on 1 processor in the directory with your scf calculation.</p>
-
 <p>Please check obtained Wannier functions occupations. They should be reliable. If you obtain a lot of <code>wrong orthogonalization</code> warnings in output, it means that something is wrong with the energy bands selection.</p>
-
 <p>As a result of Hamiltonian generation procedure at least four files will be produced:</p>
-
 <pre><code>hamilt.am
 system.am
 original_bands.dat
 wannier_bands.dat
 </code></pre>
-
 <p>The first two contains the Hamiltonian and some data about crystal structure of the compound <strong>(If you didn't obtain <code>*.am</code> files - check <code>form = 'amulet'</code> parameter in the input file for wannier_ham.x)</strong>. The last two contains eigenvalues of the full and model Hamiltonians. These files could be plotted with gnuplot and results should coincide within the energy window of interest. The coincidence of the eigenvalues is the main indicator of successful projection procedure.</p>
-
-<h1>
-<a id="user-content-step-3-exchange-parameters-calculation-with-exchangesx" class="anchor" href="#step-3-exchange-parameters-calculation-with-exchangesx" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Step 3: Exchange parameters calculation with exchanges.x</h1>
-
+<p>#Step 3: Exchange parameters calculation with exchanges.x</p>
 <h2>
 <a id="user-content-installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
-
 <p>The code requires a Fortran compiler (gfortran is ok) and LAPACK installed in the system. Open <code>Makefile</code> with your favorite editor and set <code>FC</code> and <code>LIBS</code> variables by hands. Than just say <code>make</code> inside the directory with source code.</p>
-
 <p>The code supports openmp parallelization and could be run on a multiprocessor machine as <code>OMP_NUM_THREADS=4 exchanges.x &lt; exchages.in</code> (where 4 is the number of parallel threads)</p>
-
 <p><code>exchanges.x</code> file should be generated as a result.</p>
-
 <h2>
 <a id="user-content-usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
-
-<p>The theoretical background for exchanges calculation is described in <a href="http://link.aps.org/doi/10.1103/PhysRevB.91.224405">Phys. Rev. B 91, 224405 (2015)</a>. </p>
-
+<p>The theoretical background for exchanges calculation is described in <a href="http://link.aps.org/doi/10.1103/PhysRevB.91.224405" rel="nofollow">Phys. Rev. B 91, 224405 (2015)</a>.</p>
 <p>There are few examples of calculations in <code>examples</code> dir.</p>
-
 <p>Most of input parameters are set by default and there is no need to change them is most cases. The main thing that should be tuned - <code>distance</code> parameter for the nearest neighbors search.</p>
-
 <p>Input file for <code>exchanges.x</code> has similar to <code>wannier_ham.x</code> Fortran namelists form:</p>
-
 <pre><code>========================================================================
 NAMELIST: &amp;exchanges
    +--------------------------------------------------------------------
    Variable:       emin
-
+   
    Type:           float
    Default:        -30
    Description:    minimum energy for Green's function integration 
@@ -916,7 +910,7 @@ NAMELIST: &amp;exchanges
    +--------------------------------------------------------------------
    +--------------------------------------------------------------------
    Variable:       emax
-
+   
    Type:           float
    Default:        0.05
    Description:    maximum energy for Green's function integration 
@@ -924,21 +918,21 @@ NAMELIST: &amp;exchanges
    +--------------------------------------------------------------------
    +--------------------------------------------------------------------
    Variable:       height
-
+   
    Type:           float
    Default:        0.5
    Description:    height of the integration contour in eV
    +--------------------------------------------------------------------
    +--------------------------------------------------------------------
    Variable:       nz1, nz2, nz3
-
+   
    Type:           integer
    Default:        150,350,150
    Description:    Number of division for integration contour
    +--------------------------------------------------------------------
    +--------------------------------------------------------------------
    Variable:       distance
-
+   
    Type:           float
    Default:        0.8
    Description:    Radius of the sphere for the nearest neighbors search
@@ -946,7 +940,7 @@ NAMELIST: &amp;exchanges
    +--------------------------------------------------------------------
    +--------------------------------------------------------------------
    Variable:       l
-
+   
    Type:           character
    Default:        'd'
    Description:    One could compute exchanges between 'd', or 'p' or
@@ -954,7 +948,7 @@ NAMELIST: &amp;exchanges
    +--------------------------------------------------------------------
    +--------------------------------------------------------------------
    Variable:       mode
-
+   
    Type:           character
    Default:        'distance'
    Description:    There are two modes of the nearest neihbors search:
@@ -969,27 +963,23 @@ NAMELIST: &amp;exchanges
 CARD: ATOMS_LIST
 
    Neccessary only if mode='list'
-
+   
    /////////////////////////////////////////
    // Syntax:                             //
    /////////////////////////////////////////
-
+   
     number_of_atoms
     atom_x atom_y atom_z (in crystal coordinates)
     atom_x atom_y atom_z
     atom_x atom_y atom_z
-
+   
    /////////////////////////////////////////
 ========================================================================
 </code></pre>
-
 <h1>
 <a id="user-content-license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License</h1>
-
 <p>The code is distributed under BSD License</p>
-
 <h1>
 <a id="user-content-author" class="anchor" href="#author" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Author</h1>
-
 <p><a href="mailto:dmitry@korotin.name">dmitry@korotin.name</a></p>
 </article></body></html>

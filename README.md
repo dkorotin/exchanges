@@ -9,6 +9,19 @@ The calculation consists of 3 independent parts:
 
 - Calculation of the exchange parameters using exchanges code. The code uses as input only two files: _system.am_ and _hamilt.am_ from the previous step.
 
+# The model
+We are using the model with the exchange term defined as: 
+```
+H = \sum_ij J_{ij}*e_i*e_j,
+```
+where e_i, and e_j are unit vectors and sum runs once over ions pairs.
+
+If you want to estimate Curie/Neel temperature from obtained exchanges, please keep in mind that the following formula should be used: 
+```
+T = N_nn*J_calc*(1/3)*S(S+1)/S^2,
+```
+where N_nn - number of neigbouring atoms with calculated exchange parameter J_calc, S is total spin moment of the atom.
+
 # Step 1: Self consistent DFT calculation
 Use Quantum ESPRESSO as usual. To obtain a reliable exchange parameters on the last step one should start from a reliable electronic structure on the first step. Perform a spin-polarized calculation on a regular k-points grid within full Brillouin zone. Reciprocal space integration should be performed with gaussian smearing. Use the following keys:
 ```
