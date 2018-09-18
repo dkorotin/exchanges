@@ -12,8 +12,8 @@ program exchange_parameters
   integer :: i, j, time_start, time_end, count_rate, nz, ia, ja, idim, jdim, iz, istart, jstart, iend, jend
   character(len=3) :: fmt='   ' ! is used for pretty output only
   real(dp) :: pos_delta
-  complex(dp), allocatable :: z(:), G(:,:,:,:,:,:), delta(:,:), tmp1(:,:), hksum(:,:,:)
-  complex(dp) :: zstep, tmp2
+  complex(dp), allocatable :: z(:), G(:,:,:,:,:,:), delta(:,:), tmp1(:,:), tmp2(:,:), hksum(:,:,:)
+  complex(dp) :: zstep, tmp3
   real(dp), allocatable :: Jexc(:,:), Jexc0(:), Jorb(:,:,:,:)
   
 
@@ -164,7 +164,7 @@ program exchange_parameters
   allocate( Jorb(nnnbrs,nnnbrs,MAXVAL(block_dim),MAXVAL(block_dim)))
   Jorb = cmplx(0.0,0.0,dp)
 
-  allocate( tmp1(MAXVAL(block_dim),MAXVAL(block_dim)) )
+  allocate( tmp1(MAXVAL(block_dim),MAXVAL(block_dim)), tmp2(MAXVAL(block_dim),MAXVAL(block_dim)) )
 
   DO ia=1,nnnbrs
     DO ja=ia+1,nnnbrs
@@ -182,18 +182,28 @@ program exchange_parameters
           stop 'Not equal subblocks size'
         END IF        
 
-        DO iz=1,nz
+        DO iz=1,nz-1
           zstep = z(iz+1) - z(iz)
 
           tmp1 = cmplx(0.0,0.0,dp)
 
-          tmp1(1:idim,1:idim) = MATMUL( &
-                            MATMUL(delta(istart:iend,istart:iend),G(iz,ia,ja,1:idim,1:jdim,2)), &
-                            MATMUL(delta(jstart:jend,jstart:jend),G(iz,ja,ia,1:jdim,1:idim,1)) &
+          if (iz > 1) then
+            tmp1 = tmp2
+          else
+            tmp1(1:idim,1:idim) = MATMUL( &
+                              MATMUL(delta(istart:iend,istart:iend),G(iz,ia,ja,1:idim,1:jdim,2)), &
+                              MATMUL(delta(jstart:jend,jstart:jend),G(iz,ja,ia,1:jdim,1:idim,1)) &
+                              )
+          end if
+
+          tmp2(1:idim,1:idim) = MATMUL( &
+                            MATMUL(delta(istart:iend,istart:iend),G(iz+1,ia,ja,1:idim,1:jdim,2)), &
+                            MATMUL(delta(jstart:jend,jstart:jend),G(iz+1,ja,ia,1:jdim,1:idim,1)) &
                             )
 
+          ! integration using trapezoidal rule
           Jorb(ia,ja,1:idim,1:idim) = &
-              Jorb(ia,ja,1:idim,1:idim) + DIMAG(tmp1(1:idim,1:idim)*zstep)
+              Jorb(ia,ja,1:idim,1:idim) + DIMAG( ( tmp1(1:idim,1:idim)+tmp2(1:idim,1:idim) )/2.0*zstep)
 
         END DO
 
@@ -204,7 +214,7 @@ program exchange_parameters
 
     END DO
   END DO
-  deallocate(tmp1)
+  deallocate(tmp1, tmp2)
 
   Jexc = (-1.d0/tpi)*Jexc
   Jorb = (-1.d0/tpi)*Jorb
@@ -236,12 +246,12 @@ program exchange_parameters
     DO j=1,nspin
       write(stdout,'(/5x,a8,i3,a5,i2)') 'For atom', ia, 'spin', j
       DO i = 1, block_dim(parent(ia))
-          tmp2 = cmplx(0.0,0.0,dp)
-          DO iz=1,nz
+          tmp3 = cmplx(0.0,0.0,dp)
+          DO iz=1,nz-1
             zstep = z(iz+1) - z(iz)
-            tmp2 = tmp2 + ((-1.d0/pi)*DIMAG(G(iz,ia,ia,i,i,j)*zstep))
+            tmp3 = tmp3 + ((-1.d0/pi)*( DIMAG(G(iz,ia,ia,i,i,j)) + DIMAG(G(iz+1,ia,ia,i,i,j)) )/2.0*zstep)
           END DO
-        write(stdout,'(7x,a8,i2,a13,f6.3)') 'Orbital', i, ' occupation: ', DREAL(tmp2)
+        write(stdout,'(7x,a8,i2,a13,f6.3)') 'Orbital', i, ' occupation: ', DREAL(tmp3)
       END DO
     END DO
   END DO
