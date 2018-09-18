@@ -38,7 +38,7 @@ program exchange_parameters
   nz2 = 3000
   nz3 = 150
   height = 0.01
-  emin = -30.0
+  emin = -100.0
   emax = 0.0
   distance = 8.d-1
   mode = 'distance'
@@ -63,35 +63,27 @@ program exchange_parameters
   read(stdin, exchanges, iostat=ios)
   if( ios .ne. 0 ) stop "Can't read input"
 
-  write(stdout,'(5x,a34)') 'Parameters of integration contour:'
-  write(stdout,'(5x,a7,f7.3,a9,f6.3,a11,f5.3,a5)') 'emin = ', emin, '  emax = ', emax, '  height = ', height,' (eV)'
-  write(stdout,'(5x,a6,i4,a8,i4,a8,i4)') 'nz1 = ', nz1, '  nz2 = ', nz2, '  nz3 = ', nz3
-  
   call read_hamilt()
   call read_crystal()
 
   if(atom_of_interest == -100) atom_of_interest = block_atom(1)
 
-  ! debug
-  if( iverbosity .ge. 3) then
-    ! output H(0)
-    allocate( hksum(hdim,hdim,nspin) )
-    hksum = cmplx(0.0,0.0,dp)
-
-    do i=1, nkp
-      hksum(:,:,:) = hksum(:,:,:) + h(:,:,i,:)*wk(i)
-    end do
-
-    do i=1, nspin
-      write(stdout,'(/,5x,a13,i2,a1)') 'H(0) for spin', i, ':'
-      call output_matrix_by_blocks(hdim,dreal(hksum(:,:,i)))
-    end do
-
-    deallocate( hksum ) 
-  end if
-  ! end of debug
+  ! let's find emin as the lowest hamiltonian eigenvalue if emin is not set
+  if( emin == -100.0 ) call find_emin(emin)
   
   ! Output of the readed values
+
+  write(stdout,'(5x,a34)') 'Parameters of integration contour:'
+  write(stdout,'(5x,a7,f7.3,a9,f6.3,a11,f5.3,a5)') 'emin = ', emin, '  emax = ', emax, '  height = ', height,' (eV)'
+  write(stdout,'(5x,a6,i4,a8,i4,a8,i4)') 'nz1 = ', nz1, '  nz2 = ', nz2, '  nz3 = ', nz3
+
+  ! check integration countur
+  if ( (emax - emin) / nz2 > height ) then
+    write(stdout, '(/,5x,a55)' ) '*******************************************************'
+    write(stdout, '(5x,a55)' )   'WARNING: increase nz2 or check the integration contour!'
+    write(stdout, '(5x,a55)' )   '*******************************************************'
+  end if
+  
   write(stdout,'(/,5x,a20,f13.9,a5)') 'Cell constant (alat):', alat, 'Bohr'
   write(stdout,'(5x,20a)') 'Cell vectors (rows):'
   do i = 1, 3
@@ -512,4 +504,56 @@ subroutine inverse_complex_matrix(dim,a)
   call ZGETRI(dim,a,dim,ipiv,work,dim,info)
   if(info /= 0) stop "inverse_complex_matrix Error in ZGETRI"
 
+end subroutine
+
+subroutine find_emin(emin)
+  use parameters, only : dp
+  use general, only : h, nkp, wk, nspin, hdim, efermi
+  use iomodule, only: stdout, iverbosity, output_matrix_by_blocks
+
+  implicit none
+
+  complex(dp), allocatable :: hksum(:,:,:), work(:)
+  real(dp), allocatable :: ev(:), rwork(:)
+  integer :: i, j, info, lwork
+  real(dp), intent(inout) :: emin
+
+  allocate( hksum(hdim,hdim,nspin) )
+  hksum = cmplx(0.0,0.0,dp)
+
+  do i=1, nkp
+    hksum(:,:,:) = hksum(:,:,:) + h(:,:,i,:)*wk(i)
+  end do
+
+  allocate( ev(hdim) )
+  emin = 0.0
+
+  allocate(rwork(3*hdim-2))
+
+  ! obtain optimal lwork parameter
+  allocate( work(1) )
+  
+  call zheev('N', 'U', hdim, hksum(:,:,1), hdim, ev, work, -1, rwork, info)
+  lwork = work(1)
+  deallocate(work)
+
+  allocate( work(lwork) )
+  do i = 1, nspin
+    call zheev('N', 'U', hdim, hksum(:,:,i), hdim, ev, work, lwork, rwork, info)
+    emin = min( ev(1),emin )
+  end do
+  deallocate( work, rwork, ev )
+
+  emin = floor( emin - efermi -2.0)
+
+  ! debug
+  if( iverbosity .ge. 3) then
+    do i=1, nspin
+      write(stdout,'(/,5x,a13,i2,a1)') 'H(0) for spin', i, ':'
+      call output_matrix_by_blocks(hdim,dreal(hksum(:,:,i)))
+    end do
+  ! end of debug
+  end if
+
+  deallocate( hksum ) 
 end subroutine
