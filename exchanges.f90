@@ -11,7 +11,7 @@ program exchange_parameters
 
   integer :: i, j, time_start, time_end, count_rate, nz, ia, ja, idim, jdim, iz, istart, jstart, iend, jend
   character(len=3) :: fmt='   ' ! is used for pretty output only
-  real(dp) :: pos_delta
+  real(dp) :: pos_delta(3)
   complex(dp), allocatable :: z(:), G(:,:,:,:,:,:), delta(:,:), tmp1(:,:), tmp2(:,:), hksum(:,:,:)
   complex(dp) :: zstep, tmp3
   real(dp), allocatable :: Jexc(:,:), Jexc0(:), Jorb(:,:,:,:)
@@ -109,11 +109,9 @@ program exchange_parameters
   write(stdout,'(/5x,a17,i4,a8)') 'We will consider ', nnnbrs,' atoms: '
 
   do i = 1, nnnbrs
-    pos_delta = sqrt( (taunew(1,i)-tau(1,atom_of_interest))**2 + &
-                  (taunew(2,i)-tau(2,atom_of_interest))**2 + &
-                  (taunew(3,i)-tau(3,atom_of_interest))**2 )
+    pos_delta =   taunew(:,i)-tau(:,atom_of_interest)
     write(stdout,'(5x,i2,a2,a3,x,3f9.5,3x,a12,f9.5,a7)') i, ': ', &
-      atomlabel( block_atom( parent(i) ) ), taunew(:,i), '( distance =', pos_delta, ' alat )'
+      atomlabel( block_atom( parent(i) ) ), taunew(:,i), '( distance =', norm2(pos_delta), ' alat )'
   end do
 
 
@@ -222,13 +220,16 @@ program exchange_parameters
   DO ia = 1, nnnbrs
     DO ja = ia+1, nnnbrs
         ! Compute distance between atoms for pretty output
-        pos_delta= SQRT((taunew(1,ia) - taunew(1,ja))**2+ &
-                        (taunew(2,ia) - taunew(2,ja))**2+ &
-                        (taunew(3,ia) - taunew(3,ja))**2 )
+        pos_delta= taunew(:,ia) - taunew(:,ja)
         !
-        write(stdout,'(/5x,a35,i3,a4,i3,a2,f7.3,a7,i5,a13,f6.3,a)') &
-              'Exchange interaction between atoms ', ia, 'and', ja, ': ', &
-              Jexc(ia,ja)*1.0d3, ' meV = ', INT(Jexc(ia,ja)/kb_ev), ' K (distance:',pos_delta,')'
+        write(stdout,'(/5x,a35,a3,a,i3,a6,a3,a,i3,a4,f7.3,a7,i5,a13,f6.3,a)') &
+              'Exchange interaction between atoms ', &
+              atomlabel( block_atom( parent(ia) ) ), '(', ia, ') and ', &
+              atomlabel( block_atom( parent(ja) ) ), '(', ja, ') : ', &
+              Jexc(ia,ja)*1.0d3, ' meV = ', INT(Jexc(ia,ja)/kb_ev), ' K (distance:',norm2(pos_delta),')'
+
+        write(stdout,'(5x,a35,3f8.4)') 'Connecting vector in cell vectors: ', pos_delta
+        write(stdout,'(5x,a35,3f8.4)') 'Connecting vector in Cart. coords: ', MATMUL( pos_delta, TRANSPOSE(cell) )
         
         write(stdout,'(/7x,a62)') "Orbital exchange interaction matrix J_{i,j,m,n} (in K and meV):"
         DO i=1,block_dim(parent(ia))
