@@ -59,7 +59,7 @@ END SUBROUTINE compute_g
 
 subroutine compute_gloc(Gloc,H,z)
   use parameters, only : dp
-  use general, only: hdim, efermi, nkp
+  use general, only: hdim, efermi, nkp, inverse_complex_matrix
 
   implicit none
   

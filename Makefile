@@ -22,10 +22,13 @@ LFLAGS =
 
 OBJ = parameters.o general.o iomodule.o find_nnbrs.o green_function.o
 
-all: $(PROG)
+all: $(PROG) atoms_list.x
  
 exchanges.x:  $(OBJ) exchanges.o
 	$(FC) $(LFLAGS) -o $@ exchanges.o $(OBJ) $(LIBS)
+
+atoms_list.x:  $(OBJ) atoms_list.o
+	$(FC) $(LFLAGS) -o $@ atoms_list.o $(OBJ) $(LIBS)
 
 clean:
 	rm *.o *.mod
