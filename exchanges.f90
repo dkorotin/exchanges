@@ -152,7 +152,7 @@ program exchange_parameters
   ! debug
   if( iverbosity .ge. 3) then
     write(stdout,'(/,5x,a15)') 'Computed delta:'
-    call output_matrix_by_blocks(hdim,dreal(delta))
+    call output_matrix_by_blocks(hdim,dreal(delta),nblocks,block_start,block_dim)
   end if
   ! end of debug
 
@@ -309,7 +309,7 @@ end subroutine clear
 
 subroutine find_emin(emin)
   use parameters, only : dp
-  use general, only : h, nkp, wk, nspin, hdim, efermi
+  use general, only : h, nkp, wk, nspin, hdim, efermi, nblocks, block_start, block_dim
   use iomodule, only: stdout, iverbosity, output_matrix_by_blocks
 
   implicit none
@@ -351,7 +351,7 @@ subroutine find_emin(emin)
   if( iverbosity .ge. 3) then
     do i=1, nspin
       write(stdout,'(/,5x,a13,i2,a1)') 'H(0) for spin', i, ':'
-      call output_matrix_by_blocks(hdim,dreal(hksum(:,:,i)))
+      call output_matrix_by_blocks(hdim,dreal(hksum(:,:,i)),nblocks,block_start,block_dim)
     end do
   ! end of debug
   end if
