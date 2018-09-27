@@ -20,7 +20,7 @@ PROG = exchanges.x
 
 LFLAGS =
 
-OBJ = parameters.o general.o iomodule.o find_nnbrs.o green_function.o
+OBJ = parameters.o iomodule.o general.o find_nnbrs.o green_function.o
 
 all: $(PROG) atoms_list.x
  
