@@ -7,7 +7,7 @@ module parameters
 
   integer, parameter :: &
     dp = selected_real_kind(14,200), &
-    maxnnbrs = 300 ! maximum number of nearest neighbours
+    maxnnbrs = 500 ! maximum number of nearest neighbours
   
   real(dp), parameter :: pi               = 3.14159265358979323846_dp
   real(dp), parameter :: tpi              = 2.0_dp * pi
