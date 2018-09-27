@@ -65,12 +65,12 @@ module iomodule
     
   end subroutine open_input_file
 
-  subroutine output_matrix_by_blocks(dim,matrix)
+  subroutine output_matrix_by_blocks(dim, matrix, nblocks, block_start, block_dim)
+
     use parameters, only : dp
-    use general, only : nblocks, block_start, block_dim
     implicit none
 
-    integer, intent(in) :: dim
+    integer, intent(in) :: dim, nblocks, block_start(nblocks), block_dim(nblocks)
     real(dp), intent(in) :: matrix(dim,dim)
     integer :: iblock, i, j, block_end
 
