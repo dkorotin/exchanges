@@ -7,7 +7,7 @@ module general
   save
 
   !Crystal cell
-  real(dp) :: alat, cell(3,3)
+  real(dp) :: alat, cell(3,3), inv_cell(3,3)
   real(dp), allocatable :: tau(:,:)
   integer :: natoms
   character(len=3), allocatable :: atomlabel(:)
@@ -80,6 +80,8 @@ module general
     do i = 1,3
       read(iunsystem,*) cell(:,i)
     end do
+
+    inv_cell = matinv3(cell)
     
     call find_section(iunsystem,'&atoms')
     read(iunsystem,*) natoms
@@ -253,5 +255,28 @@ subroutine atoms_list(mode,distance,atom_of_interest,l_of_interest)
   end do
 
 end subroutine atoms_list
+
+pure function matinv3(A) result(B)
+  !! Performs a direct calculation of the inverse of a 3×3 matrix.
+  real(dp), intent(in) :: A(3,3)   !! Matrix
+  real(dp)             :: B(3,3)   !! Inverse matrix
+  real(dp)             :: detinv
+
+  ! Calculate the inverse determinant of the matrix
+  detinv = 1/(A(1,1)*A(2,2)*A(3,3) - A(1,1)*A(2,3)*A(3,2)&
+            - A(1,2)*A(2,1)*A(3,3) + A(1,2)*A(2,3)*A(3,1)&
+            + A(1,3)*A(2,1)*A(3,2) - A(1,3)*A(2,2)*A(3,1))
+
+  ! Calculate the inverse of the matrix
+  B(1,1) = +detinv * (A(2,2)*A(3,3) - A(2,3)*A(3,2))
+  B(2,1) = -detinv * (A(2,1)*A(3,3) - A(2,3)*A(3,1))
+  B(3,1) = +detinv * (A(2,1)*A(3,2) - A(2,2)*A(3,1))
+  B(1,2) = -detinv * (A(1,2)*A(3,3) - A(1,3)*A(3,2))
+  B(2,2) = +detinv * (A(1,1)*A(3,3) - A(1,3)*A(3,1))
+  B(3,2) = -detinv * (A(1,1)*A(3,2) - A(1,2)*A(3,1))
+  B(1,3) = +detinv * (A(1,2)*A(2,3) - A(1,3)*A(2,2))
+  B(2,3) = -detinv * (A(1,1)*A(2,3) - A(1,3)*A(2,1))
+  B(3,3) = +detinv * (A(1,1)*A(2,2) - A(1,2)*A(2,1))
+end function
 
 end module general

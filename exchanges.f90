@@ -220,7 +220,7 @@ program exchange_parameters
   DO ia = 1, nnnbrs
     DO ja = ia+1, nnnbrs
         ! Compute distance between atoms for pretty output
-        pos_delta= taunew(:,ia) - taunew(:,ja)
+        pos_delta= taunew(:,ja) - taunew(:,ia)
         !
         write(stdout,'(/5x,a35,a3,a,i3,a6,a3,a,i3,a4,f7.3,a7,i5,a13,f6.3,a)') &
               'Exchange interaction between atoms ', &
@@ -228,8 +228,8 @@ program exchange_parameters
               atomlabel( block_atom( parent(ja) ) ), '(', ja, ') : ', &
               Jexc(ia,ja)*1.0d3, ' meV = ', INT(Jexc(ia,ja)/kb_ev), ' K (distance:',norm2(pos_delta),')'
 
-        write(stdout,'(5x,a35,3f8.4)') 'Connecting vector in cell vectors: ', pos_delta
-        write(stdout,'(5x,a35,3f8.4)') 'Connecting vector in Cart. coords: ', MATMUL( pos_delta, TRANSPOSE(cell) )
+        write(stdout,'(10x,a37,3f8.4,a3,3f8.4)') 'Connecting vector (Cart. / crystal): ', pos_delta, &
+                                             ' / ', MATMUL( pos_delta, TRANSPOSE(inv_cell)  )
         
         write(stdout,'(/7x,a62)') "Orbital exchange interaction matrix J_{i,j,m,n} (in K and meV):"
         DO i=1,block_dim(parent(ia))

@@ -53,8 +53,8 @@ program atoms_list_prog
     pos_delta =   taunew(:,i)-tau(:,atom_of_interest)
     write(stdout,'(5x,i3,a2,a3,x,3f9.5,3x,a12,f9.5,a7)') i, ': ', &
       atomlabel( block_atom( parent(i) ) ), taunew(:,i), '( distance =', norm2(pos_delta), ' alat )'
-    write(stdout,'(10x,a37,3f8.4,a3,3f8.4)') 'Connecting vector (crystal / Cart.): ', pos_delta, &
-                                             ' / ', MATMUL( pos_delta, TRANSPOSE(cell) )
+    write(stdout,'(10x,a37,3f8.4,a3,3f8.4)') 'Connecting vector (Cart. / crystal): ', pos_delta, &
+                                             ' / ', MATMUL( pos_delta, TRANSPOSE(inv_cell)  )
   end do
         
   call clear()
