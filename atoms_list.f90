@@ -17,15 +17,21 @@ program atoms_list_prog
   
   real(dp) :: distance ! distance for the nearest neighbours search
 
-  call get_command_argument(1, arg)
-  if (len_trim(arg) == 0) then
-    distance = 8.d-1
-  else
-    read(arg, *) distance
-  end if
+  select case (command_argument_count())
+    case (1)
+      call get_command_argument(1, arg)
+      read(arg, *) distance
+    case (2)
+      call get_command_argument(1, arg)
+      read(arg, *) distance
+      call get_command_argument(2, arg)
+      read(arg, *) atom_of_interest
+    case default
+      distance = 8.d-1
+      atom_of_interest = -100
+  end select
   
   l = 'd'
-  atom_of_interest = -100
   
   call system_clock(time_start,count_rate)
 
