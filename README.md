@@ -163,7 +163,7 @@ wannier_bands.dat
 ```
 The first two contains the Hamiltonian and some data about crystal structure of the compound __(If you didn't obtain `*.am` files - check `form = 'amulet'` parameter in the input file for wannier_ham.x)__. The last two contains eigenvalues of the full and model Hamiltonians. These files could be plotted with gnuplot and results should coincide within the energy window of interest. The coincidence of the eigenvalues is the main indicator of successful projection procedure.
 
-#Step 3: Exchange parameters calculation with exchanges.x
+# Step 3: Exchange parameters calculation with exchanges.x
 ## Installation
 The code requires a Fortran compiler (gfortran is ok) and LAPACK installed in the system. Open `Makefile` with your favorite editor and set `FC` and `LIBS` variables by hands. Than just say `make` inside the directory with source code.
 
